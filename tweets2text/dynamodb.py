@@ -22,7 +22,6 @@ def get_dynamodb():
             g.dynamodb = boto3session.resource(
                 'dynamodb', endpoint_url=endpoint_url
             )
-            # g.dynamodb = boto3session.resource('dynamodb')
         else:
             g.dynamodb = boto3session.resource('dynamodb')
 
