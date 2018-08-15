@@ -9,5 +9,5 @@ TweetsToText is a bot that lives on Twitter. It collects your tweets into plain 
 1. Follow [@TweetsToText](https://twitter.com/TweetsToText). It will follow you back.
 2. Mention @TweetsToText before you start tweet-stormin'.
 3. Mention @TweetsToText again in your final tweet.
-4. Check your DMs. You should get a link from @TweetsToText where you can download your text file
-5. Do whatever. It's a public link so you can share it with anyone.
+4. Check your DMs. @TweetsToText will send you a link where you can download your text file.
+5. Do whatever. You can copy and paste the text into your favorite text editor or your CMS, or share the link (which is public) with your editor or whoever).
