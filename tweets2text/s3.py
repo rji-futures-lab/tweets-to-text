@@ -11,7 +11,12 @@ from .boto3 import get_boto3session
 
 def get_s3():
     """
-    Returns a connection to AWS S3.
+    Connect to S3.
+
+    Add the connection to the Flask application context (`g.s3`),
+    if missing.
+
+    Return an S3 `Resource` instance.
     """
     if 's3' not in g:
         boto3session = get_boto3session()
@@ -22,7 +27,7 @@ def get_s3():
 
 def get_bucket():
     """
-    Returns a boto3 Bucket() instance for `S3_BUCKET_NAME` (defined in config).
+    Returns a boto3 `Bucket` instance for `S3_BUCKET_NAME` (defined in config).
     """
     s3 = get_s3()
 

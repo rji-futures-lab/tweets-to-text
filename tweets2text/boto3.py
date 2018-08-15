@@ -10,6 +10,11 @@ import boto3
 def get_boto3session():
     """
     Initialize a boto3 session.
+
+    Add the boto3 session to the Flask application context (`g.boto3session`),
+    if missing.
+
+    Return a Session instance.
     """
     if 'boto3session' not in g:
         g.boto3session = boto3.Session(

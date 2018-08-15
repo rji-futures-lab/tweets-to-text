@@ -43,7 +43,7 @@ def webhook_challenge():
 @bp.route('/', methods=['POST'])
 def event_listener():
     account_activity = request.get_json()
-    # need to convert every empty string value in account_activity into None
+    
     item = {
         'created_at': datetime.now().isoformat(),
         'account_activity': json.dumps(account_activity),
