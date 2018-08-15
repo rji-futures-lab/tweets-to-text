@@ -8,17 +8,16 @@ name = "pypi"
 [packages]
 
 flask = "*"
-flask-dynamo = "*"
 requests = "*"
 python-dotenv = "*"
 twitterapi = "*"
+zappa = "*"
 
 
 [dev-packages]
 
 ipython = "*"
 ipdb = "*"
-zappa = "*"
 
 
 [requires]
