@@ -5,7 +5,6 @@ Initialize AWS S3 for text file buckets.
 """
 import os
 from urllib.parse import urlunparse
-import click
 from flask import current_app, g
 from .boto3 import get_boto3session
 
