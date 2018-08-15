@@ -50,7 +50,7 @@ def event_listener():
     }
 
     get_table('account-activity').put_item(Item=item)
-    if os.getenv('FLASK_ENV') == 'development':
-        response = handle_account_activity(account_activity)
+    
+    response = handle_account_activity(account_activity)
 
     return json.dumps(response)

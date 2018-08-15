@@ -3,6 +3,7 @@
 """
 Functions for handling Twitter account activity.
 """
+from zappa.async import task
 from .follow import handle as handle_follow_event
 from .mention import handle as handle_mention_event
 from ..job import handle as handle_job
@@ -46,6 +47,7 @@ def is_job_action(event, for_user_id):
         return False
 
 
+@task
 def handle(account_activity):
     """
     Handle incoming Twitter account activity.
