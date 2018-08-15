@@ -40,6 +40,8 @@ def get_table(table_name):
     Return a DynamoDB `Table` instance for table_name.
     """
     dynamodb = get_dynamodb()
+    if not table_name.startswith('TweetsToText'):
+        table_name = 'TweetsToText-' + table_name
 
     return dynamodb.Table(table_name)
 
