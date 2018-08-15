@@ -3,8 +3,6 @@
 """
 Initialize AWS DynamoDB for data storage.
 """
-import os
-import click
 from flask import current_app, g
 from .boto3 import get_boto3session
 
@@ -20,7 +18,10 @@ def get_dynamodb():
     """
     if 'dynamodb' not in g:
         boto3session = get_boto3session()
-        if os.getenv('FLASK_ENV') == 'development':
+        is_local_host = (
+            'DYNAMO_LOCAL_HOST' and 'DYNAMO_LOCAL_PORT' in current_app.config
+        )
+        if is_local_host:
             endpoint_url = '{0}:{1}'.format(
                 current_app.config['DYNAMO_LOCAL_HOST'],
                 current_app.config['DYNAMO_LOCAL_PORT'],
