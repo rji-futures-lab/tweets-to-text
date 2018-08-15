@@ -58,7 +58,7 @@ def get_table_schema(table_name):
 
 schema = [
     dict(
-        TableName='account-activity',
+        TableName='TweetsToText-account-activity',
         KeySchema=[
             dict(AttributeName='created_at', KeyType='HASH'),
         ],
@@ -68,7 +68,7 @@ schema = [
         ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5),
     ),
     dict(
-        TableName='jobs',
+        TableName='TweetsToText-jobs',
         KeySchema=[
             dict(AttributeName='user_id', KeyType='HASH'),
             dict(AttributeName='init_tweet_id', KeyType='RANGE')
@@ -80,7 +80,7 @@ schema = [
         ProvisionedThroughput=dict(ReadCapacityUnits=5, WriteCapacityUnits=5),
     ),
     dict(
-        TableName='webhooks',
+        TableName='TweetsToText-webhooks',
         KeySchema=[
             dict(AttributeName='env_name', KeyType='HASH'),
             dict(AttributeName='id', KeyType='RANGE'),
