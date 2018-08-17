@@ -11,7 +11,7 @@
             "appnope*", "parso*", "pexpect*", "ptyprocess*",
             "pickleshare*", "prompt-toolkit*", "wcwidth*", "pygments*",
             "simplegeneric*", "traitlets*", "colorama*",
-            "sqlite*.db", ".python-version", ".env", "README.md",
+            "sqlite*.db", ".python-version", "README.md",
             "static", "media", "dev.py"
         ],
     },

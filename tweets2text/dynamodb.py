@@ -3,6 +3,7 @@
 """
 Initialize AWS DynamoDB for data storage.
 """
+import os
 from flask import current_app, g
 from .boto3 import get_boto3session
 
@@ -11,28 +12,26 @@ def get_dynamodb():
     """
     Connect to DynamoDb.
 
-    Add the connection to the Flask application context (`g.dynamodb`),
-    if missing.
-
     Return a DynamoDB `Resource` instance.
     """
-    if 'dynamodb' not in g:
-        boto3session = get_boto3session()
-        is_local_host = (
-            'DYNAMO_LOCAL_HOST' and 'DYNAMO_LOCAL_PORT' in current_app.config
-        )
-        if is_local_host:
-            endpoint_url = '{0}:{1}'.format(
-                current_app.config['DYNAMO_LOCAL_HOST'],
-                current_app.config['DYNAMO_LOCAL_PORT'],
-            )
-            g.dynamodb = boto3session.resource(
-                'dynamodb', endpoint_url=endpoint_url
-            )
-        else:
-            g.dynamodb = boto3session.resource('dynamodb')
+    boto3session = get_boto3session()
 
-    return g.dynamodb
+    is_local_host = bool(
+        os.getenv('DYNAMO_LOCAL_HOST') and os.getenv('DYNAMO_LOCAL_PORT')
+    )
+
+    if is_local_host:
+        endpoint_url = '{0}:{1}'.format(
+            os.getenv('DYNAMO_LOCAL_HOST'),
+            os.getenv('DYNAMO_LOCAL_PORT'),
+        )
+        dynamodb = boto3session.resource(
+            'dynamodb', endpoint_url=endpoint_url
+        )
+    else:
+        dynamodb = boto3session.resource('dynamodb')
+
+    return dynamodb
 
 
 def get_table(table_name):

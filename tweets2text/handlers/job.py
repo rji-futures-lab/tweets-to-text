@@ -4,7 +4,7 @@ Functions for handling tweet2text jobs.
 import json
 from uuid import uuid4
 from TwitterAPI import TwitterPager
-from tweets2text.dynamodb import get_dynamodb
+from tweets2text.dynamodb import get_table
 from tweets2text.s3 import get_bucket, get_s3_file_url
 from tweets2text.twitter_api import get_api, send_dm
 
@@ -45,7 +45,7 @@ def store_tweets(user_id, init_tweet_id, tweets):
     """
     Add tweets attribute to DynamoDb job table item.
     """
-    jobs_table = get_dynamodb().Table('jobs')
+    jobs_table = get_table('jobs')
     update = jobs_table.update_item(
         Key={
             'user_id': user_id, 
@@ -99,7 +99,7 @@ def store_s3_key(user_id, init_tweet_id, key):
     """
     Add key from S3 to related item in jobs DynamoDB table.
     """
-    jobs_table = get_dynamodb().Table('jobs')
+    jobs_table = get_table('jobs')
     update = jobs_table.update_item(
         Key={
             'user_id': user_id, 

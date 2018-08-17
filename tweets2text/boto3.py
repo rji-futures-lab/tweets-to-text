@@ -3,24 +3,27 @@
 """
 Initialize boto3, the AWS Python API.
 """
-from flask import current_app, g
+import os
 import boto3
+from dotenv import load_dotenv
 
 
 def get_boto3session():
     """
-    Initialize a boto3 session.
-
-    Add the boto3 session to the Flask application context (`g.boto3session`),
-    if missing.
-
-    Return a Session instance.
+    Initialize a boto3 session. Return a Session instance.
     """
-    if 'boto3session' not in g:
-        g.boto3session = boto3.Session(
-            aws_access_key_id=current_app.config['AWS_ACCESS_KEY_ID'],
-            aws_secret_access_key=current_app.config['AWS_SECRET_ACCESS_KEY'],
-            region_name=current_app.config['REGION'],
-        )
+    env_loaded = bool(
+        os.getenv('BOTO3_ACCESS_KEY') and os.getenv('BOTO3_SECRET_KEY')
+    )
+    if not env_loaded:
+        load_dotenv()
 
-    return g.boto3session
+    config = dict(
+        aws_access_key_id=os.getenv('BOTO3_ACCESS_KEY'),
+        aws_secret_access_key=os.getenv('BOTO3_SECRET_KEY'),        
+    )
+
+    if os.getenv('BOTO3_REGION'):
+        config['region_name'] = os.getenv('BOTO3_REGION')
+
+    return boto3.Session(**config)

@@ -9,7 +9,7 @@ from flask import current_app
 from flask.cli import AppGroup, with_appcontext
 from boto3.dynamodb.conditions import Key, Attr
 from tweets2text.dynamodb import get_table
-from tweets2text.twitter_api import get_api
+from tweets2text.twitter_api import get_api, get_api_env
 
 
 twitter_cli = AppGroup('twitter')
@@ -20,9 +20,7 @@ def get_latest_webhook_id(webhooks_table):
     Return id of the most recent valid webhook.
     """
     q = webhooks_table.query(
-        KeyConditionExpression=Key('env_name').eq(
-            current_app.config['TWITTER_API_ENV']
-        ),
+        KeyConditionExpression=Key('env_name').eq(get_api_env()),
         FilterExpression=Attr('valid').eq(True),
         ScanIndexForward=False,
     )
@@ -54,7 +52,7 @@ def delete_current_webhook_command(webhook_id):
     else:
         response = get_api().request(
             'account_activity/all/:{env}/webhooks/:{id}'.format(
-                env=current_app.config['TWITTER_API_ENV'],
+                env=get_api_env(),
                 id=webhook_id
             ),
             method_override='DELETE'
@@ -62,7 +60,7 @@ def delete_current_webhook_command(webhook_id):
         response.response.raise_for_status()
         webhooks_table.update_item(
             Key={
-                'env_name': current_app.config['TWITTER_API_ENV'], 
+                'env_name': get_api_env(), 
                 'id': webhook_id
             },
             UpdateExpression='SET valid = :val1',
@@ -77,10 +75,9 @@ def get_subscription_info_command():
     """
     Get Twitter account activity subscription info.
     """
+    # TODO: does this command even work?
     response = get_api().request(
-        'account_activity/all/count'.format(
-            current_app.config['TWITTER_API_ENV'],
-        ),
+        'account_activity/all/count',
     )
     response.response.raise_for_status()
     click.echo(response.status_code)
@@ -121,13 +118,13 @@ def register_webhook_command(domain):
     url = urljoin(domain, 'webhooks/twitter/')
     response = get_api().request(
         'account_activity/all/:{}/webhooks'.format(
-            current_app.config['TWITTER_API_ENV'],
+            get_api_env(),
         ),
         params={'url': url},
     )
     response.response.raise_for_status()
     item = response.response.json()
-    item['env_name'] = current_app.config['TWITTER_API_ENV']
+    item['env_name'] = get_api_env()
     get_table('webhooks').put_item(Item=item)
     click.echo(item)
 
@@ -140,7 +137,7 @@ def subscribe_to_user_command():
     """
     response = get_api().request(
         'account_activity/all/:{}/subscriptions'.format(
-            current_app.config['TWITTER_API_ENV'],
+            get_api_env(),
         ),
         method_override='POST'
     )
@@ -166,7 +163,7 @@ def validate_webhook_command(webhook_id):
 
     response = get_api().request(
         'account_activity/all/:{env}/webhooks/:{id}'.format(
-            env=current_app.config['TWITTER_API_ENV'],
+            env=get_api_env(),
             id=webhook_id,
         ),
         method_override='PUT'

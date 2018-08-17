@@ -5,7 +5,7 @@ Initialize AWS S3 for text file buckets.
 """
 import os
 from urllib.parse import urlunparse
-from flask import current_app, g
+from dotenv import load_dotenv
 from .boto3 import get_boto3session
 
 
@@ -13,16 +13,12 @@ def get_s3():
     """
     Connect to S3.
 
-    Add the connection to the Flask application context (`g.s3`),
-    if missing.
-
     Return an S3 `Resource` instance.
     """
-    if 's3' not in g:
-        boto3session = get_boto3session()
-        g.s3 = boto3session.resource('s3')
+    boto3session = get_boto3session()
+    s3 = boto3session.resource('s3')
 
-    return g.s3
+    return s3
 
 
 def get_bucket():
@@ -31,13 +27,20 @@ def get_bucket():
     """
     s3 = get_s3()
 
-    return s3.Bucket(current_app.config['S3_BUCKET_NAME'])
+    if not os.getenv('S3_BUCKET_NAME'):
+        load_dotenv()
+
+    return s3.Bucket(os.getenv('S3_BUCKET_NAME'))
 
 
 def get_s3_file_url(key):
     """
     Returns a url to key in the app's S3 bucket.
     """
-    netloc = 's3.%s.amazonaws.com' % current_app.config['REGION']
-    path = '{0}/{1}'.format(current_app.config['S3_BUCKET_NAME'], key)
+    if not os.getenv('BOTO3_REGION'):
+        load_dotenv()
+
+    netloc = 's3.%s.amazonaws.com' % os.getenv('BOTO3_REGION')
+    path = '{0}/{1}'.format(os.getenv('S3_BUCKET_NAME'), key)
+
     return urlunparse(('https', netloc, path, '', '', ''))

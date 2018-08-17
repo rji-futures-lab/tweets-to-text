@@ -22,18 +22,21 @@ def create_tables_command(delete):
         exists = table_name in created_tables
         
         if exists and not delete:
-            click.echo('%s already created.' % table_name)
+            click.echo(' %s already created.' % table_name)
         else:
             if exists and delete:
+                table = dynamodb.Table(table_name)
                 dynamodb.meta.client.delete_table(TableName=table_name)
-                click.echo('Deleting %s.' % table_name)
+                click.echo('  Deleting %s...' % table_name)
+                table.wait_until_not_exists()
+                click.echo('  %s deleted.' % table_name)
 
             table = dynamodb.create_table(**table_def)
             table.meta.client.get_waiter('table_exists').wait(
                 TableName=table_def['TableName']
             )
             click.echo(
-                '{0.table_name} created at {0.creation_date_time}'.format(table)
+                ' {0.table_name} created at {0.creation_date_time}'.format(table)
             )
 
     click.echo('All tables created.')

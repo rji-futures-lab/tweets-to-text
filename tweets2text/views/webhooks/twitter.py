@@ -9,7 +9,7 @@ import hashlib
 import hmac
 import json
 import os
-from flask import Blueprint, current_app, request
+from flask import Blueprint, current_app, jsonify, request
 from tweets2text.handlers import handle_account_activity
 from tweets2text.dynamodb import get_table
 
@@ -51,6 +51,8 @@ def event_listener():
 
     get_table('account-activity').put_item(Item=item)
     
-    response = handle_account_activity(account_activity)
+    handle_account_activity(account_activity)
 
-    return json.dumps(response)
+    return 'Activity for account {for_user_id} received.'.format(
+        **account_activity
+    )

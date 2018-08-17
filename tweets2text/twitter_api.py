@@ -1,7 +1,8 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 import json
-from flask import current_app, g
+import os
+from dotenv import load_dotenv
 from TwitterAPI import TwitterAPI
 
 
@@ -9,20 +10,43 @@ def get_api():
     """
     Get an authenticated connection to Twitter's API.
 
-    Add the connection to the Flask application context (`g.twitter_api`),
-    if missing.
-
     Return a `TwitterAPI` instance.
     """
-    if 'twitter_api' not in g:
-        g.twitter_api = TwitterAPI(
-            current_app.config['TWITTER_CONSUMER_KEY'],
-            current_app.config['TWITTER_CONSUMER_SECRET'],
-            current_app.config['TWITTER_ACCESS_TOKEN'],
-            current_app.config['TWITTER_ACCESS_TOKEN_SECRET'],
+    env_loaded = bool(
+        os.getenv('TWITTER_CONSUMER_KEY') and 
+        os.getenv('TWITTER_CONSUMER_SECRET') and
+        os.getenv('TWITTER_ACCESS_TOKEN') and
+        os.getenv('TWITTER_ACCESS_TOKEN_SECRET')
+    )
+
+    if not env_loaded:
+        print(' Environment variables are missing. Loading...')
+        load_dotenv()
+        print(
+                os.getenv('TWITTER_CONSUMER_KEY'),
+                os.getenv('TWITTER_CONSUMER_SECRET'),
+                os.getenv('TWITTER_ACCESS_TOKEN'),
+                os.getenv('TWITTER_ACCESS_TOKEN_SECRET')
         )
 
-    return g.twitter_api
+    twitter_api = TwitterAPI(
+        os.getenv('TWITTER_CONSUMER_KEY'),
+        os.getenv('TWITTER_CONSUMER_SECRET'),
+        os.getenv('TWITTER_ACCESS_TOKEN'),
+        os.getenv('TWITTER_ACCESS_TOKEN_SECRET')
+    )
+
+    return twitter_api
+
+
+def get_api_env():
+    """
+    Return the Twitter API environment (configured in .env file).
+    """
+    if not os.getenv('TWITTER_API_ENV'):
+        load_dotenv()
+
+    return os.getenv('TWITTER_API_ENV')
 
 
 def send_dm(to_user_id, message_text):
