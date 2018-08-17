@@ -38,6 +38,7 @@ def create_job(data):
     job = {
         'user_id': data['user']['id'],
         'init_tweet_id': data['id'],
+        'screen_name': data['user']['screen_name'],
         'init_event_json': json.dumps(data),
     }
     jobs_table = get_table('jobs')
