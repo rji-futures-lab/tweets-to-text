@@ -4,13 +4,12 @@
 Initialize AWS DynamoDB for data storage.
 """
 import os
-from flask import current_app, g
 from .boto3 import get_boto3session
 
 
 def get_dynamodb():
     """
-    Connect to DynamoDb.
+    Connect to DynamoDB.
 
     Return a DynamoDB `Resource` instance.
     """
