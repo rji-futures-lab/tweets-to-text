@@ -64,13 +64,20 @@ def get_tweet_text(tweets):
     More specifically:
         1. Sort from earliest to latest tweet.
         2. Add two newlines between each tweet.
-        3. TODO: Reference author of re-tweets.
+        3. TODO: Attribute re-tweets to the original author.
         4. TODO: Denote replies.
-        5. TODO: remove bot @handle from final tweet.
+        5. Remove bot @TweetsToText from the final tweet.
 
     Return a string.
     """
     sorted_tweets = sorted(tweets, key=lambda k: k['id'])
+    
+    last_tweet = sorted_tweets.pop(-1)
+    last_tweet['text'] = last_tweet['text'].replace(
+        '@TweetsToText', ''
+    ).strip()
+    sorted_tweets.append(last_tweet)
+
     return '\n\n'.join([ i['text'] for i in sorted_tweets ])
 
 
