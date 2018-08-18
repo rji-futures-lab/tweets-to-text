@@ -57,7 +57,7 @@ def reply_to_init_mention(init_tweet_id, screen_name):
     """
     replies = [
         'We got you', 'On it', 'Got it', 'Gotcha', 'Here for you', 'With you',
-        "Let's do this", "Rock on", 'We on it', 'Got your back',
+        "Let's do this", 'We on it', 'Got your back',
         '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿',
         '👌🏻', '👌🏼', '👌🏽', '👌🏾', '👌🏿', 
     ]
