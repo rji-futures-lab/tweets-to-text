@@ -15,6 +15,9 @@ dynamodb_cli = AppGroup('dynamodb')
 @click.option('--delete', '-d', help='Drop existing tables.', is_flag=True)
 @with_appcontext
 def create_tables_command(delete):
+    """
+    Create all tables in DynamoDB, skipping any that already exists.
+    """
     dynamodb = get_dynamodb()
     created_tables = [t.name for t in dynamodb.tables.all()]
     for table_def in schema:
