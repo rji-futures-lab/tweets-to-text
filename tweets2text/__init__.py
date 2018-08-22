@@ -13,7 +13,6 @@ __email__ = 'gordonj@rjionline.org'
 def create_app(test_config=None):
 
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_pyfile('config.py')
 
     from .commands import add_all as add_all_commands
     add_all_commands(app)
