@@ -3,6 +3,7 @@
 """
 Blueprint and routes for webhooks with Twitter.
 """
+import os
 import base64
 from datetime import datetime
 import hashlib
@@ -27,7 +28,7 @@ def webhook_challenge():
     crc = request.args['crc_token']
   
     validation = hmac.new(
-        key=bytes(current_app.config['TWITTER_CONSUMER_SECRET'], 'utf-8'),
+        key=bytes(os.getenv('TWITTER_CONSUMER_SECRET'), 'utf-8'),
         msg=bytes(crc, 'utf-8'),
         digestmod = hashlib.sha256
     )

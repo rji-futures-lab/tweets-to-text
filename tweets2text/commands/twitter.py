@@ -3,13 +3,14 @@
 """
 Custom commands for managing tweet2text's integration with AWS S3.
 """
+import os
 from urllib.parse import urljoin
 import click
 from flask import current_app
 from flask.cli import AppGroup, with_appcontext
 from boto3.dynamodb.conditions import Key, Attr
 from tweets2text.dynamodb import get_table
-from tweets2text.twitter_api import get_api, get_api_env
+from tweets2text.twitter_api import get_api
 
 
 twitter_cli = AppGroup('twitter')
@@ -20,7 +21,9 @@ def get_latest_webhook_id(webhooks_table):
     Return id of the most recent valid webhook.
     """
     q = webhooks_table.query(
-        KeyConditionExpression=Key('env_name').eq(get_api_env()),
+        KeyConditionExpression=Key('env_name').eq(
+            os.getenv('TWITTER_API_ENV')
+        ),
         FilterExpression=Attr('valid').eq(True),
         ScanIndexForward=False,
     )
@@ -52,7 +55,7 @@ def delete_current_webhook_command(webhook_id):
     else:
         response = get_api().request(
             'account_activity/all/:{env}/webhooks/:{id}'.format(
-                env=get_api_env(),
+                env=os.getenv('TWITTER_API_ENV'),
                 id=webhook_id
             ),
             method_override='DELETE'
@@ -60,7 +63,7 @@ def delete_current_webhook_command(webhook_id):
         response.response.raise_for_status()
         webhooks_table.update_item(
             Key={
-                'env_name': get_api_env(), 
+                'env_name': os.getenv('TWITTER_API_ENV'), 
                 'id': webhook_id
             },
             UpdateExpression='SET valid = :val1',
@@ -118,13 +121,13 @@ def register_webhook_command(domain):
     url = urljoin(domain, 'webhooks/twitter/')
     response = get_api().request(
         'account_activity/all/:{}/webhooks'.format(
-            get_api_env(),
+            os.getenv('TWITTER_API_ENV'),
         ),
         params={'url': url},
     )
     response.response.raise_for_status()
     item = response.response.json()
-    item['env_name'] = get_api_env()
+    item['env_name'] = os.getenv('TWITTER_API_ENV')
     get_table('webhooks').put_item(Item=item)
     click.echo(item)
 
@@ -137,7 +140,7 @@ def subscribe_to_user_command():
     """
     response = get_api().request(
         'account_activity/all/:{}/subscriptions'.format(
-            get_api_env(),
+            os.getenv('TWITTER_API_ENV'),
         ),
         method_override='POST'
     )
@@ -163,7 +166,7 @@ def validate_webhook_command(webhook_id):
 
     response = get_api().request(
         'account_activity/all/:{env}/webhooks/:{id}'.format(
-            env=get_api_env(),
+            env=os.getenv('TWITTER_API_ENV'),
             id=webhook_id,
         ),
         method_override='PUT'
