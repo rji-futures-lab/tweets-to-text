@@ -30,13 +30,14 @@ def is_job_action(event, for_user_id):
     authored_by_bot = event['user']['id'] == for_user_id
     # ASSUME: no jobs initiated or completed via quote tweet
     is_quote_tweet = event['is_quote_status']
-    # ASSUME: no jobs initiated or completed via reply  
+    # ASSUME: no jobs initiated or completed via a reply 
     is_reply = (
-        bool(event['in_reply_to_user_id']) or 
+        bool(event['in_reply_to_status_id_str']) or 
         bool(event['in_reply_to_status_id'])
     )
     # ASSUME: no jobs initiated or completed via retweet
     is_retweet = 'retweeted_status' in event.keys()
+
     if (
         not authored_by_bot and
         not is_quote_tweet and
@@ -44,9 +45,11 @@ def is_job_action(event, for_user_id):
         not is_retweet
         
     ):
-        return True
+        is_job_action = True
     else:
-        return False
+        is_job_action = False
+
+    return is_job_action
 
 
 def reply_to_init_mention(init_tweet_id, screen_name):
@@ -78,7 +81,7 @@ def handle(account_activity):
 
     Return a dict with types and counts of event received and processed.    
     """
-    for_user_id = account_activity['for_user_id']
+    for_user_id = int(account_activity['for_user_id'])
     # TODO: append to this as stuff is processed
     response = []
 
