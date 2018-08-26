@@ -119,6 +119,18 @@ def store_s3_key(user_id, init_tweet_id, key):
 
 
 def handle(job):
+    """
+    Handle a job.
+
+    More specifically:
+        1. Get all the tweets
+        2. Store them in DyanmoDB
+        3. Sort and format the tweet text
+        4. Store the tweet texts in S3
+        5. Send a direct message to the user.
+
+    Return a Twitter.
+    """
     user_id = job['user_id']
     init_tweet_id = job['init_tweet_id']
     final_tweet_id = job['final_tweet_id']
@@ -133,5 +145,4 @@ def handle(job):
     url = get_s3_file_url(key)
     # TODO: Maybe format the message to be more user-friendly
     response = send_dm(user_id, url)
-    
     return response
