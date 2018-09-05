@@ -16,6 +16,8 @@
     font-weight: bold;
     background-color: #ffffff;
     color: #2b2b2b;
+    padding-left: 0.25%;
+    padding-right: 0.25%;
 }
 
 
@@ -55,12 +57,12 @@
     }
 }
 
-.col-10 h2 {
+.col-10 h2, h4 {
     text-align: center;
 }
 
 .site-footer {
-    text-align: center;
+    /*text-align: center;*/
     padding-top: 40px;
     padding-bottom: 40px;
     background-color: #329BB1;
@@ -79,4 +81,10 @@
 
 #copyright p {
     margin-bottom: 0;
+}
+
+.status {
+    background-color: #eaab00;
+    padding-left: 1.25%;
+    padding-right: 1.25%;
 }
