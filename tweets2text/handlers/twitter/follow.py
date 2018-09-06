@@ -16,5 +16,5 @@ def handle(event):
     response = get_api().request(
         'friendships/create', {'user_id': user_to_follow}
     )
-
+    response.response.raise_for_status()
     return response
