@@ -15,7 +15,7 @@ def is_follow(event, for_user_id):
     """
     Return True if the event signals a follow-back.
     """
-    self_follow = event['source']['id'] == for_user_id
+    self_follow = int(event['source']['id']) == for_user_id
     if event['type'] == 'follow' and not self_follow:
         return True
     else:
