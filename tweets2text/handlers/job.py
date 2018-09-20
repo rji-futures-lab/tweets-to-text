@@ -4,6 +4,7 @@ Functions for handling tweet2text jobs.
 import json
 from uuid import uuid4
 from TwitterAPI import TwitterPager
+from zappa.async import task
 from tweets2text.dynamodb import get_table
 from tweets2text.s3 import get_bucket, get_s3_file_url
 from tweets2text.twitter_api import get_api, send_dm
@@ -48,7 +49,7 @@ def store_tweets(user_id, init_tweet_id, tweets):
     jobs_table = get_table('jobs')
     update = jobs_table.update_item(
         Key={
-            'user_id': user_id, 
+            'user_id': user_id,
             'init_tweet_id': init_tweet_id
         },
         UpdateExpression='SET tweets = :val1',
@@ -71,14 +72,14 @@ def get_tweet_text(tweets):
     Return a string.
     """
     sorted_tweets = sorted(tweets, key=lambda k: k['id'])
-    
+
     last_tweet = sorted_tweets.pop(-1)
     last_tweet['text'] = last_tweet['text'].replace(
         '@TweetsToText', ''
     ).strip()
     sorted_tweets.append(last_tweet)
 
-    return '\n\n'.join([ i['text'] for i in sorted_tweets ])
+    return '\n\n'.join([i['text'] for i in sorted_tweets])
 
 
 def write_to_s3(tweet_text):
@@ -109,7 +110,7 @@ def store_s3_key(user_id, init_tweet_id, key):
     jobs_table = get_table('jobs')
     update = jobs_table.update_item(
         Key={
-            'user_id': user_id, 
+            'user_id': user_id,
             'init_tweet_id': init_tweet_id
         },
         UpdateExpression='SET s3_key = :val1',

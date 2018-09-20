@@ -23,7 +23,7 @@ def create_tables_command(delete):
     for table_def in schema:
         table_name = table_def['TableName']
         exists = table_name in created_tables
-        
+
         if exists and not delete:
             click.echo(' %s already created.' % table_name)
         else:
@@ -39,7 +39,9 @@ def create_tables_command(delete):
                 TableName=table_def['TableName']
             )
             click.echo(
-                ' {0.table_name} created at {0.creation_date_time}'.format(table)
+                ' {0.table_name} created at {0.creation_date_time}'.format(
+                    table
+                )
             )
 
     click.echo('All tables created.')

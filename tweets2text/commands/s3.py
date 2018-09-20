@@ -18,7 +18,7 @@ def create_bucket_command():
     Create the S3 bucket specified in the `S3_BUCKET_NAME` env var.
     """
     bucket = get_bucket()
-    
+
     if not bucket.creation_date:
         bucket.create()
         bucket.meta.client.get_waiter('bucket_exists')

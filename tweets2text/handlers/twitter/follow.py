@@ -3,6 +3,7 @@
 """
 Functions for handling Twitter follow events.
 """
+from zappa.async import task
 from tweets2text.twitter_api import get_api
 
 

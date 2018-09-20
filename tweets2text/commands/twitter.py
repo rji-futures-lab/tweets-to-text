@@ -6,7 +6,6 @@ Custom commands for managing tweet2text's integration with AWS S3.
 import os
 from urllib.parse import urljoin
 import click
-from flask import current_app
 from flask.cli import AppGroup, with_appcontext
 from boto3.dynamodb.conditions import Key, Attr
 from tweets2text.dynamodb import get_table
@@ -46,7 +45,7 @@ def delete_current_webhook_command(webhook_id):
     Set valid to `False` in webhooks DynamoDB table.
     """
     webhooks_table = get_table('webhooks')
-    
+
     if not webhook_id:
         webhook_id = get_latest_webhook_id(webhooks_table)
 
@@ -63,7 +62,7 @@ def delete_current_webhook_command(webhook_id):
         response.response.raise_for_status()
         webhooks_table.update_item(
             Key={
-                'env_name': os.getenv('TWITTER_API_ENV'), 
+                'env_name': os.getenv('TWITTER_API_ENV'),
                 'id': webhook_id
             },
             UpdateExpression='SET valid = :val1',
@@ -99,7 +98,7 @@ def get_webhook_info_command():
         'account_activity/all/webhooks'
     )
     response.response.raise_for_status()
-    
+
     data = response.response.json()
     for env in data['environments']:
         click.echo(env['environment_name'])
@@ -156,10 +155,12 @@ def validate_webhook_command(webhook_id):
     """
     Validate a webhook with Twitter.
 
-    Unless id provided, validate the most recent valid webhook.    
+    Unless id provided, validate the most recent valid webhook.
     """
+    webhooks_table = get_table('webhooks')
+
     if not webhook_id:
-        webhook_id = get_webhook_id(webhooks_table)
+        webhook_id = get_latest_webhook_id(webhooks_table)
 
     if not webhook_id:
         click.echo('No webhooks currently registered.')

@@ -19,7 +19,7 @@ def create_app(test_config=None):
 
     from .views import index
     app.register_blueprint(index.bp, url_prefix='/')
-    
+
     from .views.webhooks import twitter
     app.register_blueprint(
         twitter.bp, url_prefix='/webhooks/twitter/'

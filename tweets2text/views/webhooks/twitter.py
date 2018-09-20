@@ -9,28 +9,28 @@ from datetime import datetime
 import hashlib
 import hmac
 import json
-import os
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, request
 from tweets2text.handlers import handle_account_activity
 from tweets2text.dynamodb import get_table
 
 
 bp = Blueprint('twitter_webhook', __name__)
 
-## TODO: add security checks
-# 1. "Optional signature header validation" in https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/guides/securing-webhooks
+# TODO: add security checks
+# 1. "Optional signature header validation" in https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/guides/securing-webhooks # noqa
 # 2. "Additional security guidelines" in same
 # 3. maybe handle by decorating both of these
+
 
 # Twitter makes GET method calls to this route to perform a CRC check
 @bp.route('/', methods=['GET'])
 def webhook_challenge():
     crc = request.args['crc_token']
-  
+
     validation = hmac.new(
         key=bytes(os.getenv('TWITTER_CONSUMER_SECRET'), 'utf-8'),
         msg=bytes(crc, 'utf-8'),
-        digestmod = hashlib.sha256
+        digestmod=hashlib.sha256
     )
     digested = base64.b64encode(validation.digest())
     response = {
@@ -44,14 +44,14 @@ def webhook_challenge():
 @bp.route('/', methods=['POST'])
 def event_listener():
     account_activity = request.get_json()
-    
+
     item = {
         'created_at': datetime.now().isoformat(),
         'account_activity': json.dumps(account_activity),
     }
 
     get_table('account-activity').put_item(Item=item)
-    
+
     handle_account_activity(account_activity)
 
     return 'Activity for account {for_user_id} received.'.format(

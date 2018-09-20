@@ -45,5 +45,5 @@ def send_dm(to_user_id, message_text):
     ).response
 
     response.raise_for_status()
-    
+
     return response

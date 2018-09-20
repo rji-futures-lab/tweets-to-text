@@ -30,9 +30,9 @@ def is_job_action(event, for_user_id):
     authored_by_bot = event['user']['id'] == for_user_id
     # ASSUME: no jobs initiated or completed via quote tweet
     is_quote_tweet = event['is_quote_status']
-    # ASSUME: no jobs initiated or completed via a reply 
+    # ASSUME: no jobs initiated or completed via a reply
     is_reply = (
-        bool(event['in_reply_to_status_id_str']) or 
+        bool(event['in_reply_to_status_id_str']) or
         bool(event['in_reply_to_status_id'])
     )
     # ASSUME: no jobs initiated or completed via retweet
@@ -43,7 +43,7 @@ def is_job_action(event, for_user_id):
         not is_quote_tweet and
         not is_reply and
         not is_retweet
-        
+
     ):
         is_job_action = True
     else:
@@ -63,7 +63,7 @@ def reply_to_init_mention(init_tweet_id, screen_name):
         'We got you', 'On it', 'Got it', 'Gotcha', 'Here for you', 'With you',
         "Let's do this", 'We on it', 'Got your back',
         '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿',
-        '👌🏻', '👌🏼', '👌🏽', '👌🏾', '👌🏿', 
+        '👌🏻', '👌🏼', '👌🏽', '👌🏾', '👌🏿',
     ]
 
     status = '@{0} {1}'.format(screen_name, random.choice(replies))
@@ -79,7 +79,7 @@ def handle(account_activity):
     """
     Handle incoming Twitter account activity.
 
-    Return a dict with types and counts of event received and processed.    
+    Return a dict with types and counts of event received and processed.
     """
     for_user_id = int(account_activity['for_user_id'])
     # TODO: append to this as stuff is processed

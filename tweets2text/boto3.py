@@ -13,7 +13,7 @@ def get_boto3session():
     """
     config = dict(
         aws_access_key_id=os.getenv('BOTO3_ACCESS_KEY'),
-        aws_secret_access_key=os.getenv('BOTO3_SECRET_KEY'),        
+        aws_secret_access_key=os.getenv('BOTO3_SECRET_KEY'),
     )
 
     if os.getenv('BOTO3_REGION'):

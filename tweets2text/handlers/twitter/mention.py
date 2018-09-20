@@ -60,7 +60,7 @@ def create_or_update_job(data):
         created = True
     else:
         created = False
-        
+
         # update the job
         jobs_table = get_table('jobs')
         exp = 'SET final_tweet_id = :val1, final_event_json = :val2'

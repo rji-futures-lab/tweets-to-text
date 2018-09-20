@@ -3,7 +3,7 @@
 """
 Custom commands for managing an instance of the tweets2text app.
 """
-from .dynamodb import dynamodb_cli 
+from .dynamodb import dynamodb_cli
 from .s3 import s3_cli
 from .twitter import twitter_cli
 
