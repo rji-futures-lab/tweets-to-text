@@ -5,6 +5,7 @@ Functions for handling Twitter mention events.
 """
 import json
 import random
+from time import sleep
 from boto3.dynamodb.conditions import Key, Attr
 from zappa.async import task
 from tweets2text.twitter_api import get_api
@@ -117,6 +118,7 @@ def handle(event):
     created, job = create_or_update_job(event)
 
     if created:
+        sleep(5)
         reply_to_init_mention(
             job['init_tweet_id'],
             job['screen_name'],

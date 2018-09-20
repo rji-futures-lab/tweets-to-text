@@ -3,6 +3,7 @@
 """
 Functions for handling Twitter follow events.
 """
+from time import sleep
 from zappa.async import task
 from tweets2text.twitter_api import get_api
 
@@ -14,6 +15,8 @@ def handle(event):
 
     Return a TwitterResponse instance.
     """
+    sleep(10)
+
     user_to_follow = event['source']['id']
     response = get_api().request(
         'friendships/create', {'user_id': user_to_follow}
