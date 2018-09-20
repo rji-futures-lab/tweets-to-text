@@ -118,6 +118,7 @@ def store_s3_key(user_id, init_tweet_id, key):
     return update
 
 
+@task(capture_response=True)
 def handle(job):
     """
     Handle a job.

@@ -6,6 +6,7 @@ Functions for handling Twitter follow events.
 from tweets2text.twitter_api import get_api
 
 
+@task(capture_response=True)
 def handle(event):
     """
     Follow the source of a follow event.

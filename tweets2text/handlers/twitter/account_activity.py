@@ -52,6 +52,7 @@ def is_job_action(event, for_user_id):
     return is_job_action
 
 
+@task(capture_response=True)
 def reply_to_init_mention(init_tweet_id, screen_name):
     """
     Tweet a reply to the initial the user's initial @mention of the bot.
@@ -74,7 +75,6 @@ def reply_to_init_mention(init_tweet_id, screen_name):
     return response
 
 
-@task
 def handle(account_activity):
     """
     Handle incoming Twitter account activity.
