@@ -3,9 +3,6 @@
 """
 Functions for handling Twitter account activity.
 """
-import random
-from zappa.async import task
-from tweets2text.twitter_api import get_api
 from .follow import handle as handle_follow_event
 from .mention import handle as handle_mention_event
 from ..job import handle as handle_job
@@ -52,29 +49,6 @@ def is_job_action(event, for_user_id):
     return is_job_action
 
 
-@task(capture_response=True)
-def reply_to_init_mention(init_tweet_id, screen_name):
-    """
-    Tweet a reply to the initial the user's initial @mention of the bot.
-
-    Return `TwitterResponse` instance.
-    """
-    replies = [
-        'We got you', 'On it', 'Got it', 'Gotcha', 'Here for you', 'With you',
-        "Let's do this", 'We on it', 'Got your back',
-        '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿',
-        '👌🏻', '👌🏼', '👌🏽', '👌🏾', '👌🏿',
-    ]
-
-    status = '@{0} {1}'.format(screen_name, random.choice(replies))
-    params = dict(status=status, in_reply_to_status_id=init_tweet_id)
-
-    response = get_api().request('statuses/update', params)
-    response.response.raise_for_status()
-
-    return response
-
-
 def handle(account_activity):
     """
     Handle incoming Twitter account activity.
@@ -93,12 +67,7 @@ def handle(account_activity):
         for event in account_activity['tweet_create_events']:
             if is_job_action(event, for_user_id):
                 created, job = handle_mention_event(event)
-                if created:
-                    reply_to_init_mention(
-                        job['init_tweet_id'],
-                        job['screen_name'],
-                    )
-                else:
+                if not created:
                     handle_job(job)
     # if 'tweet_delete_events' in account_activity.keys():
     # TODO: Do we receive these for tweets that mention the bot?

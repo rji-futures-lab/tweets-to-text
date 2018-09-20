@@ -4,7 +4,10 @@
 Functions for handling Twitter mention events.
 """
 import json
+import random
 from boto3.dynamodb.conditions import Key, Attr
+from zappa.async import task
+from tweets2text.twitter_api import get_api
 from tweets2text.dynamodb import get_table
 
 
@@ -80,10 +83,43 @@ def create_or_update_job(data):
     return (created, job)
 
 
+@task(capture_response=True)
+def reply_to_init_mention(init_tweet_id, screen_name):
+    """
+    Tweet a reply to the initial the user's initial @mention of the bot.
+
+    Return `TwitterResponse` instance.
+    """
+    replies = [
+        'We got you', 'On it', 'Got it', 'Gotcha', 'Here for you', 'With you',
+        "Let's do this", 'We on it', 'Got your back',
+        '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿',
+        '👌🏻', '👌🏼', '👌🏽', '👌🏾', '👌🏿',
+    ]
+
+    status = '@{0} {1}'.format(screen_name, random.choice(replies))
+    params = dict(status=status, in_reply_to_status_id=init_tweet_id)
+
+    response = get_api().request('statuses/update', params)
+    response.response.raise_for_status()
+
+    return response
+
+
 def handle(event):
     """
     Handle an incoming mention event.
 
     Creates or updates an item in the DynamoDB jobs table.
+
+    If a new job is create, reply to the initial tweet.
     """
-    return create_or_update_job(event)
+    created, job = create_or_update_job(event)
+
+    if created:
+        reply_to_init_mention(
+            job['init_tweet_id'],
+            job['screen_name'],
+        )
+
+    return created, job
