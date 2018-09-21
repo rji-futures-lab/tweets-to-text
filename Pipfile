@@ -1,20 +1,18 @@
 [[source]]
-url = "https://pypi.python.org/simple"
+url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
-requests = "*"
-python-dotenv = "*"
-twitterapi = "*"
-zappa = "*"
+"tweets2text" = {editable = true, path = "."}
 
 [dev-packages]
-ipython = "*"
 ipdb = "*"
+ipython = "*"
 pytest = "*"
 "flake8" = "*"
+coverage = "*"
+"flake8-docstrings" = "*"
 
 [requires]
 python_version = "3.6"
