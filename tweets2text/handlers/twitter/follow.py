@@ -4,7 +4,9 @@
 Functions for handling Twitter follow events.
 """
 from time import sleep
+from requests.exceptions import HTTPError
 from zappa.async import task
+from tweets2text import create_app
 from tweets2text.twitter_api import get_api
 
 
@@ -13,13 +15,28 @@ def handle(event):
     """
     Follow the source of a follow event.
 
-    Return a TwitterResponse instance.
+    Return response from Twitter as json.
     """
+    app = create_app()
+
     sleep(10)
 
     user_to_follow = event['source']['id']
-    response = get_api().request(
+    app.logger.info('...following user_id %s' % user_to_follow)
+    follow = get_api().request(
         'friendships/create', {'user_id': user_to_follow}
     )
-    response.response.raise_for_status()
-    return response
+
+    try:
+        follow.response.raise_for_status()
+    except HTTPError as e:
+        msg = '{0}\n{1}'.format(
+            e,
+            '\n'.join([
+                '{code}: {message}'.format(**i) 
+                for i in follow.json()['errors']
+            ])
+        )
+        app.logger.error(msg)
+
+    return follow.json()

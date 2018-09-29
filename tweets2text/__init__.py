@@ -3,6 +3,7 @@
 """
 Initialize an instance of the tweets2text app.
 """
+import logging
 from flask import Flask
 
 
@@ -24,6 +25,10 @@ def create_app(test_config=None):
     app.register_blueprint(
         twitter.bp, url_prefix='/webhooks/twitter/'
     )
+
+    from .ses import ses_handler
+    if not app.debug:
+        app.logger.addHandler(ses_handler)
 
     return app
 

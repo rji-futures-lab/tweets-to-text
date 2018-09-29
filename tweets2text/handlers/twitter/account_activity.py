@@ -3,6 +3,10 @@
 """
 Functions for handling Twitter account activity.
 """
+from time import sleep
+from flask import current_app
+from requests.exceptions import HTTPError
+from zappa.async import task
 from .follow import handle as handle_follow_event
 from .mention import handle as handle_mention_event
 from ..job import handle as handle_job
@@ -19,20 +23,16 @@ def is_follow(event, for_user_id):
         return False
 
 
-def is_job_action(event, for_user_id):
+def is_actionable_mention(event, for_user_id):
     """
-    Return True if the event signals a job action
+    Return True if the event includes an actionable mention
     """
-    # ASSUME: no jobs for the bot account
     authored_by_bot = event['user']['id'] == for_user_id
-    # ASSUME: no jobs initiated or completed via quote tweet
     is_quote_tweet = event['is_quote_status']
-    # ASSUME: no jobs initiated or completed via a reply
     is_reply = (
         bool(event['in_reply_to_status_id_str']) or
         bool(event['in_reply_to_status_id'])
     )
-    # ASSUME: no jobs initiated or completed via retweet
     is_retweet = 'retweeted_status' in event.keys()
 
     if (
@@ -42,11 +42,34 @@ def is_job_action(event, for_user_id):
         not is_retweet
 
     ):
-        is_job_action = True
+        is_actionable = True
     else:
-        is_job_action = False
+        is_actionable = False
 
-    return is_job_action
+    return is_actionable
+
+
+@task(capture_response=True)
+def reply_to_init_mention(init_tweet_id, screen_name):
+    """
+    Tweet a reply to the user's initial @mention of the bot.
+
+    Return `TwitterResponse` instance.
+    """
+    sleep(5)
+    replies = [
+        'We got you', 'On it', 'Got it', 'Gotcha', 'Here for you', 'With you',
+        "Let's do this", 'We on it', 'Got your back',
+        '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿',
+        '👌🏻', '👌🏼', '👌🏽', '👌🏾', '👌🏿',
+    ]
+
+    status = '@{0} {1}'.format(screen_name, random.choice(replies))
+    params = dict(status=status, in_reply_to_status_id=init_tweet_id)
+
+    response = get_api().request('statuses/update', params)
+
+    return response
 
 
 def handle(account_activity):
@@ -56,19 +79,43 @@ def handle(account_activity):
     Return a dict with types and counts of event received and processed.
     """
     for_user_id = int(account_activity['for_user_id'])
-    # TODO: append to this as stuff is processed
-    response = []
+    response = dict(
+        new_followers=0, init_mentions=0, final_mentions=0
+    )
 
     if 'follow_events' in account_activity.keys():
+        current_app.logger.info('Handling follow events...')
         for event in account_activity['follow_events']:
             if is_follow(event, for_user_id):
                 handle_follow_event(event)
+                response['new_followers'] += 1
+                current_app.logger.info('...new follower...')
+            else:
+                current_app.logger.info('...skipping...')
+        current_app.logger.info('All follow events handled!')
+
     if 'tweet_create_events' in account_activity.keys():
+        current_app.logger.info('Handling mention events...')
         for event in account_activity['tweet_create_events']:
-            if is_job_action(event, for_user_id):
+            if is_actionable_mention(event, for_user_id):
                 created, job = handle_mention_event(event)
-                if not created:
+                if created:
+                    current_app.logger.info('...initial mention...')
+                    reply = reply_to_init_mention()
+                    try:
+                        reply.response.raise_for_status()
+                    except HTTPError as e:
+                        current_app.logger.error(e)
+                    else:
+                        response['init_mentions'] += 1
+                else:
+                    current_app.logger.info('...final mention...')
                     handle_job(job)
+                    response['final_mentions'] += 1
+            else:
+                current_app.logger.info('...skipping...')
+        current_app.logger.info('All mention events handled!')
+
     # if 'tweet_delete_events' in account_activity.keys():
     # TODO: Do we receive these for tweets that mention the bot?
     # if so, maybe delete jobs associated with deleted tweets.

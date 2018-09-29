@@ -9,7 +9,7 @@ from datetime import datetime
 import hashlib
 import hmac
 import json
-from flask import Blueprint, request
+from flask import current_app, Blueprint, jsonify, request
 from tweets2text.handlers import handle_account_activity
 from tweets2text.dynamodb import get_table
 
@@ -33,11 +33,12 @@ def webhook_challenge():
         digestmod=hashlib.sha256
     )
     digested = base64.b64encode(validation.digest())
-    response = {
+    resp_data = {
         'response_token': 'sha256=' + format(str(digested)[2:-1])
     }
-
-    return json.dumps(response)
+    response = jsonify(resp_data)
+    
+    return response
 
 
 # Twitter makes POST method calls to this route to push any account activity
@@ -52,8 +53,10 @@ def event_listener():
 
     get_table('account-activity').put_item(Item=item)
 
-    handle_account_activity(account_activity)
+    current_app.logger.info('Handling account activity event...')
+    resp_data = handle_account_activity(account_activity)
+    current_app.logger.info('Account activity event handled!')
 
-    return 'Activity for account {for_user_id} received.'.format(
-        **account_activity
-    )
+    response = jsonify(resp_data)
+
+    return response
