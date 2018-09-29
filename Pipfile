@@ -7,12 +7,13 @@ name = "pypi"
 "tweets2text" = {editable = true, path = "."}
 
 [dev-packages]
+"flake8" = "*"
+"flake8-docstrings" = "*"
 ipdb = "*"
 ipython = "*"
 pytest = "*"
-"flake8" = "*"
-coverage = "*"
-"flake8-docstrings" = "*"
+python-coveralls = "*"
+requests-mock = "*"
 
 [requires]
 python_version = "3.6"
