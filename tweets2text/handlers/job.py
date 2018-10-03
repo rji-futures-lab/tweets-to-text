@@ -3,6 +3,7 @@ Functions for handling tweet2text jobs.
 """
 import json
 from uuid import uuid4
+from requests.exceptions import HTTPError
 from TwitterAPI import TwitterPager
 from zappa.async import task
 from tweets2text.dynamodb import get_table
@@ -28,6 +29,8 @@ def get_tweets(user_id, since_id, max_id):
         'statuses/user_timeline',
         params,
     )
+    
+    response.response.raise_for_status()
 
     if len(response.json()) > 199:
         pager = TwitterPager(
@@ -137,14 +140,12 @@ def send_dm(to_user_id, message_text):
         }
     }
 
-    response = get_api().request(
+    sent_dm = get_api().request(
         'direct_messages/events/new',
         json.dumps(event),
-    ).response
+    )
 
-    response.raise_for_status()
-
-    return response
+    return sent_dm
 
 
 @task(capture_response=True)
@@ -161,11 +162,25 @@ def handle(job):
 
     Return a Twitter.
     """
+    app = create_app()
+
     user_id = job['user_id']
     init_tweet_id = job['init_tweet_id']
     final_tweet_id = job['final_tweet_id']
 
-    tweets = get_tweets(user_id, init_tweet_id, final_tweet_id)
+    try:
+        tweets = get_tweets(user_id, init_tweet_id, final_tweet_id)
+    except HTTPError:
+        msg = '{0}\n{1}'.format(
+            e,
+            '\n'.join([
+                '{code}: {message}'.format(**i) 
+                for i in tweets['errors']
+            ])
+        )
+        app.logger.error(msg)
+    
+
     store_tweets(user_id, init_tweet_id, tweets)
 
     tweet_text = get_tweet_text(tweets)
@@ -174,5 +189,18 @@ def handle(job):
 
     url = get_s3_file_url(key)
     # TODO: Maybe format the message to be more user-friendly
-    response = send_dm(user_id, url)
-    return response
+    sent_dm = send_dm(user_id, url)
+
+    try:
+        sent_dm.response.raise_for_status()
+    except HTTPError:
+        msg = '{0}\n{1}'.format(
+            e,
+            '\n'.join([
+                '{code}: {message}'.format(**i) 
+                for i in sent_dm.json()['errors']
+            ])
+        )
+        app.logger.error(msg)
+
+    return sent_dm.response

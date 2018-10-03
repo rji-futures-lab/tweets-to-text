@@ -7,6 +7,7 @@ from time import sleep
 from flask import current_app
 from requests.exceptions import HTTPError
 from zappa.async import task
+from tweets2text import create_app
 from .follow import handle as handle_follow_event
 from .mention import handle as handle_mention_event
 from ..job import handle as handle_job
@@ -56,7 +57,9 @@ def reply_to_init_mention(init_tweet_id, screen_name):
 
     Return `TwitterResponse` instance.
     """
+    app = create_app()
     sleep(5)
+
     replies = [
         'We got you', 'On it', 'Got it', 'Gotcha', 'Here for you', 'With you',
         "Let's do this", 'We on it', 'Got your back',
@@ -67,7 +70,19 @@ def reply_to_init_mention(init_tweet_id, screen_name):
     status = '@{0} {1}'.format(screen_name, random.choice(replies))
     params = dict(status=status, in_reply_to_status_id=init_tweet_id)
 
-    response = get_api().request('statuses/update', params)
+    reply = get_api().request('statuses/update', params)
+
+    try:
+        reply.response.raise_for_status()
+    except HTTPError as e:
+        msg = '{0}\n{1}'.format(
+            e,
+            '\n'.join([
+                '{code}: {message}'.format(**i) 
+                for i in reply.json()['errors']
+            ])
+        )
+        app.logger.error(msg)
 
     return response
 
@@ -87,9 +102,9 @@ def handle(account_activity):
         current_app.logger.info('Handling follow events...')
         for event in account_activity['follow_events']:
             if is_follow(event, for_user_id):
+                current_app.logger.info('...defer on-boarding DM...')
                 handle_follow_event(event)
                 response['new_followers'] += 1
-                current_app.logger.info('...new follower...')
             else:
                 current_app.logger.info('...skipping...')
         current_app.logger.info('All follow events handled!')
@@ -100,16 +115,13 @@ def handle(account_activity):
             if is_actionable_mention(event, for_user_id):
                 created, job = handle_mention_event(event)
                 if created:
-                    current_app.logger.info('...initial mention...')
-                    reply = reply_to_init_mention()
-                    try:
-                        reply.response.raise_for_status()
-                    except HTTPError as e:
-                        current_app.logger.error(e)
-                    else:
-                        response['init_mentions'] += 1
+                    current_app.logger.info(
+                        '...defer reply to initial mention...'
+                    )
+                    reply_to_init_mention()
+                    response['init_mentions'] += 1
                 else:
-                    current_app.logger.info('...final mention...')
+                    current_app.logger.info('...defer completing job...')
                     handle_job(job)
                     response['final_mentions'] += 1
             else:
