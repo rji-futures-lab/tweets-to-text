@@ -5,6 +5,7 @@ Initialize boto3, the AWS Python API.
 """
 import os
 import boto3
+from flask import g
 
 
 def get_boto3session():
@@ -19,4 +20,7 @@ def get_boto3session():
     if os.getenv('BOTO3_REGION'):
         config['region_name'] = os.getenv('BOTO3_REGION')
 
-    return boto3.Session(**config)
+    if 'boto3' not in g:
+        g.boto3 = boto3.Session(**config)
+
+    return g.boto3
