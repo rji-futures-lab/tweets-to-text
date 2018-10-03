@@ -2,6 +2,7 @@
 Unit tests.
 """
 
+
 def test_index_view(client):
     """
     Confirm the homepage is up and running.
@@ -28,7 +29,7 @@ def test_incoming_follow(client, requests_mock, incoming_follow):
     assert response.get_json()['new_followers'] == 1
 
 
-def test_outcoming_follow(client, requests_mock, outgoing_follow):
+def test_outgoing_follow(client, requests_mock, outgoing_follow):
     """
     Confirm that an outgoing follow event does NOT cause a follow back.
     """
