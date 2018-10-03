@@ -7,7 +7,6 @@ def app():
     """
     Create and configure a new app instance for each test.
     """
-    # create the app with common test config
     app = None
     app = create_app({
         'TESTING': True,

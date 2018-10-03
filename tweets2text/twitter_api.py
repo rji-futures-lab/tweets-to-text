@@ -1,6 +1,7 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
+from flask import g
 from TwitterAPI import TwitterAPI
 
 
@@ -8,13 +9,16 @@ def get_api():
     """
     Get an authenticated connection to Twitter's API.
 
+    Add to application content, g.twitter_api, if missing.
+
     Return a `TwitterAPI` instance.
     """
-    twitter_api = TwitterAPI(
-        os.getenv('TWITTER_CONSUMER_KEY'),
-        os.getenv('TWITTER_CONSUMER_SECRET'),
-        os.getenv('TWITTER_ACCESS_TOKEN'),
-        os.getenv('TWITTER_ACCESS_TOKEN_SECRET')
-    )
+    if 'twitter_api' not in g:
+        g.twitter_api = TwitterAPI(
+            os.getenv('TWITTER_CONSUMER_KEY'),
+            os.getenv('TWITTER_CONSUMER_SECRET'),
+            os.getenv('TWITTER_ACCESS_TOKEN'),
+            os.getenv('TWITTER_ACCESS_TOKEN_SECRET')
+        )
 
-    return twitter_api
+    return g.twitter_api

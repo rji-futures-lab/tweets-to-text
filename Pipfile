@@ -11,9 +11,9 @@ name = "pypi"
 "flake8-docstrings" = "*"
 ipdb = "*"
 ipython = "*"
-pytest = "*"
 python-coveralls = "*"
 requests-mock = "*"
+moto = "*"
 
 [requires]
 python_version = "3.6"

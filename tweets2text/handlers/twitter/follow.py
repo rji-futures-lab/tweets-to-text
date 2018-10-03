@@ -4,6 +4,7 @@
 Functions for handling Twitter follow events.
 """
 from time import sleep
+from flask import g
 from requests.exceptions import HTTPError
 from zappa.async import task
 from tweets2text import create_app

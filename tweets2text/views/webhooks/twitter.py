@@ -9,18 +9,31 @@ from datetime import datetime
 import hashlib
 import hmac
 import json
-from flask import current_app, Blueprint, jsonify, request
+from flask import (
+    Blueprint,
+    current_app,
+    g,
+    jsonify,
+    request
+)
+from tweets2text.dynamodb import get_dynamodb
 from tweets2text.handlers import handle_account_activity
-from tweets2text.dynamodb import get_table
-
+from tweets2text.s3 import get_bucket
+from tweets2text.twitter_api import get_api
 
 bp = Blueprint('twitter_webhook', __name__)
+
+@bp.before_app_request
+def load_external_resources():
+    print('load_external_resources called!')
+    get_dynamodb()
+    get_bucket()
+    get_api()
 
 # TODO: add security checks
 # 1. "Optional signature header validation" in https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/guides/securing-webhooks # noqa
 # 2. "Additional security guidelines" in same
 # 3. maybe handle by decorating both of these
-
 
 # Twitter makes GET method calls to this route to perform a CRC check
 @bp.route('/', methods=['GET'])
@@ -51,7 +64,7 @@ def event_listener():
         'account_activity': json.dumps(account_activity),
     }
 
-    get_table('account-activity').put_item(Item=item)
+    g.dynamodb.Table('TweetsToText-account-activity').put_item(Item=item)
 
     current_app.logger.info('Handling account activity event...')
     resp_data = handle_account_activity(account_activity)

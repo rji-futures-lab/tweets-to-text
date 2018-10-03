@@ -4,7 +4,7 @@
 Functions for handling Twitter account activity.
 """
 from time import sleep
-from flask import current_app
+from flask import current_app, g
 from requests.exceptions import HTTPError
 from zappa.async import task
 from tweets2text import create_app
@@ -57,7 +57,7 @@ def reply_to_init_mention(init_tweet_id, screen_name):
 
     Return `TwitterResponse` instance.
     """
-    app = create_app()
+    # app = create_app()
     sleep(5)
 
     replies = [
