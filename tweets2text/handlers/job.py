@@ -1,11 +1,11 @@
-"""
-Functions for handling tweet2text jobs.
-"""
+"""Functions for handling tweet2text jobs."""
 import json
 from uuid import uuid4
+from flask import current_app
 from requests.exceptions import HTTPError
 from TwitterAPI import TwitterPager
 from zappa.async import task
+from tweets2text import create_app
 from tweets2text.dynamodb import get_table
 from tweets2text.s3 import get_bucket, get_s3_file_url
 from tweets2text.twitter_api import get_api
@@ -29,7 +29,7 @@ def get_tweets(user_id, since_id, max_id):
         'statuses/user_timeline',
         params,
     )
-    
+
     response.response.raise_for_status()
 
     if len(response.json()) > 199:
@@ -46,9 +46,7 @@ def get_tweets(user_id, since_id, max_id):
 
 
 def store_tweets(user_id, init_tweet_id, tweets):
-    """
-    Add tweets attribute to DynamoDb job table item.
-    """
+    """Add tweets attribute to DynamoDb job table item."""
     jobs_table = get_table('jobs')
     update = jobs_table.update_item(
         Key={
@@ -107,9 +105,7 @@ def write_to_s3(tweet_text):
 
 
 def store_s3_key(user_id, init_tweet_id, key):
-    """
-    Add key from S3 to related item in jobs DynamoDB table.
-    """
+    """Add key from S3 to related item in jobs DynamoDB table."""
     jobs_table = get_table('jobs')
     update = jobs_table.update_item(
         Key={
@@ -123,9 +119,7 @@ def store_s3_key(user_id, init_tweet_id, key):
 
 
 def send_dm(to_user_id, message_text):
-    """
-    Send a direct message to user_id containing message_text.
-    """
+    """Send a direct message to user_id containing message_text."""
     event = {
         "event": {
             "type": "message_create",
@@ -162,7 +156,7 @@ def handle(job):
 
     Return a Twitter.
     """
-    app = create_app()
+    app = current_app or create_app()
 
     user_id = job['user_id']
     init_tweet_id = job['init_tweet_id']
@@ -170,16 +164,15 @@ def handle(job):
 
     try:
         tweets = get_tweets(user_id, init_tweet_id, final_tweet_id)
-    except HTTPError:
+    except HTTPError as e:
         msg = '{0}\n{1}'.format(
             e,
             '\n'.join([
-                '{code}: {message}'.format(**i) 
+                '{code}: {message}'.format(**i)
                 for i in tweets['errors']
             ])
         )
         app.logger.error(msg)
-    
 
     store_tweets(user_id, init_tweet_id, tweets)
 
@@ -193,11 +186,11 @@ def handle(job):
 
     try:
         sent_dm.response.raise_for_status()
-    except HTTPError:
+    except HTTPError as e:
         msg = '{0}\n{1}'.format(
             e,
             '\n'.join([
-                '{code}: {message}'.format(**i) 
+                '{code}: {message}'.format(**i)
                 for i in sent_dm.json()['errors']
             ])
         )

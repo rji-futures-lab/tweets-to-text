@@ -1,8 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Custom commands for managing tweet2text's integration with AWS S3.
-"""
+"""Custom commands for managing tweet2text's integration with AWS S3."""
 import os
 from urllib.parse import urljoin
 import click
@@ -16,9 +14,7 @@ twitter_cli = AppGroup('twitter')
 
 
 def get_latest_webhook_id(webhooks_table):
-    """
-    Return id of the most recent valid webhook.
-    """
+    """Return id of the most recent valid webhook."""
     q = webhooks_table.query(
         KeyConditionExpression=Key('env_name').eq(
             os.getenv('TWITTER_API_ENV')
@@ -74,9 +70,7 @@ def delete_current_webhook_command(webhook_id):
 @twitter_cli.command('get-subscription-info')
 @with_appcontext
 def get_subscription_info_command():
-    """
-    Get Twitter account activity subscription info.
-    """
+    """Get Twitter account activity subscription info."""
     # TODO: does this command even work?
     response = get_api().request(
         'account_activity/all/count',
@@ -134,9 +128,7 @@ def register_webhook_command(domain):
 @twitter_cli.command('subscribe-to-user')
 @with_appcontext
 def subscribe_to_user_command():
-    """
-    Subscribe to account activity for the user.
-    """
+    """Subscribe to account activity for the user."""
     response = get_api().request(
         'account_activity/all/:{}/subscriptions'.format(
             os.getenv('TWITTER_API_ENV'),

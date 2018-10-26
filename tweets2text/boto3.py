@@ -1,8 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Initialize boto3, the AWS Python API.
-"""
+"""Initialize boto3, the AWS Python API."""
 import os
 import boto3
 from flask import g
@@ -24,7 +22,7 @@ def get_boto3session():
 
         if os.getenv('BOTO3_REGION'):
             config['region_name'] = os.getenv('BOTO3_REGION')
-        
+
         g.boto3 = boto3.Session(**config)
 
     return g.boto3

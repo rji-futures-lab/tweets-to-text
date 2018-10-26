@@ -1,8 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Initialize AWS S3 for text file buckets.
-"""
+"""Initialize AWS S3 for text file buckets."""
 import os
 from urllib.parse import urlunparse
 from flask import g
@@ -27,7 +25,7 @@ def get_s3():
 def get_bucket():
     """
     Get the bucket for `S3_BUCKET_NAME` (defined in config).
-    
+
     Add to g.s3_bucket, if missing.
 
     Returns a boto3 `Bucket` instance.
@@ -41,9 +39,13 @@ def get_bucket():
 
 def get_s3_file_url(key):
     """
-    Returns a url to key in the app's S3 bucket.
-    """
+    Get a url to a file in the app's S3 bucket.
 
+    Args:
+        key (str): The name of the file in the S3 bucket.
+
+    Return the full url (str).
+    """
     netloc = 's3.%s.amazonaws.com' % os.getenv('BOTO3_REGION')
     path = '{0}/{1}'.format(os.getenv('S3_BUCKET_NAME'), key)
 

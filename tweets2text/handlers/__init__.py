@@ -1,8 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Functions for handling internal tweet2text processes.
-"""
+"""Functions for handling internal tweet2text processes."""
 from .job import handle as handle_job
 from .twitter import (
     handle_account_activity,

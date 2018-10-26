@@ -1,5 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Initialize a connection to Twitter."""
 import os
 from flask import g
 from TwitterAPI import TwitterAPI

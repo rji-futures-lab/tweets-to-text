@@ -1,8 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Functions for handling Twitter follow events.
-"""
+"""Functions for handling Twitter follow events."""
 from time import sleep
 from flask import current_app
 from requests.exceptions import HTTPError
@@ -19,7 +17,7 @@ def handle(event):
     Return response from Twitter as json.
     """
     app = current_app or create_app()
-    
+
     if not app.testing:
         sleep(10)
 
@@ -35,7 +33,7 @@ def handle(event):
         msg = '{0}\n{1}'.format(
             e,
             '\n'.join([
-                '{code}: {message}'.format(**i) 
+                '{code}: {message}'.format(**i)
                 for i in follow.json()['errors']
             ])
         )

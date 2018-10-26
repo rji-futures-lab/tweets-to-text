@@ -1,9 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Initialize an instance of the tweets2text app.
-"""
-import logging
+"""Initialize an instance of the tweets2text app."""
 from flask import Flask
 
 
@@ -12,7 +9,11 @@ __email__ = 'gordonj@rjionline.org'
 
 
 def create_app(test_config=None):
+    """
+    Create and configure an instance of a tweets2text app.
 
+    Return a `Flask` instance.
+    """
     app = Flask(__name__, instance_relative_config=True)
 
     if test_config is None:

@@ -1,8 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Custom commands for managing tweet2text's integration with AWS DynamoDB.
-"""
+"""Custom commands for managing tweet2text's integration with AWS DynamoDB."""
 import click
 from flask.cli import AppGroup, with_appcontext
 from tweets2text.dynamodb import get_dynamodb, schema
@@ -15,9 +13,7 @@ dynamodb_cli = AppGroup('dynamodb')
 @click.option('--delete', '-d', help='Drop existing tables.', is_flag=True)
 @with_appcontext
 def create_tables_command(delete):
-    """
-    Create all tables in DynamoDB, skipping any that already exists.
-    """
+    """Create all tables in DynamoDB, skipping any that already exists."""
     dynamodb = get_dynamodb()
     created_tables = [t.name for t in dynamodb.tables.all()]
     for table_def in schema:
