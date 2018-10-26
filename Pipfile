@@ -11,10 +11,10 @@ name = "pypi"
 "flake8-docstrings" = "*"
 ipdb = "*"
 ipython = "*"
-python-coveralls = "*"
 requests-mock = "*"
 blinker = "*"
 pytest-dynamodb = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.6.6"

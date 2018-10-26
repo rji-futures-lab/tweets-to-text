@@ -1,0 +1,22 @@
+language: python
+
+sudo: false
+
+cache:
+  - pip
+
+python:
+ - "3.6"
+ - "3.7-dev"
+
+install: "make"
+
+before_script:
+  - wget http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz -O /tmp/dynamodb_local_latest.tar.gz
+  - tar -xzf /tmp/dynamodb_local_latest.tar.gz -C /tmp
+
+script:
+  - make test
+
+after_success:
+ - coveralls
