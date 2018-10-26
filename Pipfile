@@ -13,7 +13,8 @@ ipdb = "*"
 ipython = "*"
 python-coveralls = "*"
 requests-mock = "*"
-moto = "*"
+blinker = "*"
+pytest-dynamodb = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.6.6"

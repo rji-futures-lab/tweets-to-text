@@ -1,27 +1,29 @@
+"""
+Tests written in pytest style.
+"""
 import pytest
+from pytest_dynamodb import factories
 from tweets2text import create_app
+from tweets2text.dynamodb import schema
 
 
 @pytest.fixture
-def app():
+def app(dynamodb):
     """
     Create and configure a new app instance for each test.
     """
-    app = None
     app = create_app({
         'TESTING': True,
     })
+
+    for table_def in schema:
+        dynamodb.create_table(**table_def)
+
     yield app
 
 
 @pytest.fixture
-def client(app):
-    """A test client for the app."""
-    return app.test_client()
-
-
-@pytest.fixture
-def incoming_follow():
+def incoming_follow_data():
     data = {
         "for_user_id": "1017142357932769280",
         "follow_events": [
@@ -44,7 +46,7 @@ def incoming_follow():
 
 
 @pytest.fixture
-def outgoing_follow():
+def outgoing_follow_data():
     data = {
         "for_user_id": "1017142357932769280",
         "follow_events": [
@@ -62,5 +64,39 @@ def outgoing_follow():
             }
         ]
     }
-
     return data
+
+
+@pytest.fixture
+def mock_friendships_create(app, requests_mock):
+    return requests_mock.post(
+        'https://api.twitter.com/1.1/friendships/create.json',
+        json=dict()
+    )
+
+
+
+# @pytest.fixture
+# def incoming_follow_event(app, incoming_follow_data, requests_mock):
+#     # with dynamodb_set(app):
+#     requests_mock.post(
+#         'https://api.twitter.com/1.1/friendships/create.json',
+#         json=dict()
+#     )
+#     with app.test_client() as c:
+#         response = c.post(
+#             '/webhooks/twitter/',
+#             json=incoming_follow_data
+#         )
+#     return response
+
+
+# @pytest.fixture
+# def outgoing_follow_event(app, outgoing_follow_data):
+#     # with dynamodb_set(app):
+#     with app.test_client() as c:
+#         response = c.post(
+#             '/webhooks/twitter/',
+#             json=outgoing_follow_data
+#         )
+#     return response
