@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Blueprint and routes for webhooks with Twitter.
-"""
+"""Blueprint for integrating with Twitter's Account Activity API."""
 import os
 import base64
 from datetime import datetime
@@ -23,8 +21,17 @@ from tweets2text.twitter_api import get_api
 
 bp = Blueprint('twitter_webhook', __name__)
 
+
 @bp.before_app_request
 def load_external_resources():
+    """
+    Load external resources to the global app context before each request.
+
+    Adds:
+        - dynamoDb
+        - s3 bucket
+        - TwitterAPI
+    """
     get_dynamodb()
     get_bucket()
     get_api()
@@ -34,9 +41,19 @@ def load_external_resources():
 # 2. "Additional security guidelines" in same
 # 3. maybe handle by decorating both of these
 
-# Twitter makes GET method calls to this route to perform a CRC check
+
 @bp.route('/', methods=['GET'])
 def webhook_challenge():
+    """
+    Perform a Challenge-Response Check (CRC) to secure the Twitter webhook.
+
+    The CRC verifies our ownership of the app and the webhook URL with Twitter.
+
+    Twitter makes GET method calls to this route with a crc_token, which is
+    used along with TWITTER_CONSUMER_SECRET to build a response_token.
+
+    Return JSON that includes the response_token.
+    """
     crc = request.args['crc_token']
 
     validation = hmac.new(
@@ -49,13 +66,17 @@ def webhook_challenge():
         'response_token': 'sha256=' + format(str(digested)[2:-1])
     }
     response = jsonify(resp_data)
-    
+
     return response
 
 
-# Twitter makes POST method calls to this route to push any account activity
 @bp.route('/', methods=['POST'])
 def event_listener():
+    """
+    Route called by Twitter to announce account activity.
+
+    Twitter makes POST method calls to this route.
+    """
     account_activity = request.get_json()
 
     item = {

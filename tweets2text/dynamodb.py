@@ -1,8 +1,6 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Initialize AWS DynamoDB for data storage.
-"""
+"""Initialize AWS DynamoDB for data storage."""
 import os
 from flask import g
 from .boto3 import get_boto3session
@@ -18,9 +16,9 @@ def get_dynamodb():
     """
     if 'dynamodb' not in g:
         boto3session = get_boto3session()
-        
+
         is_local_host = bool(
-            os.getenv('DYNAMO_LOCAL_HOST') and 
+            os.getenv('DYNAMO_LOCAL_HOST') and
             os.getenv('DYNAMO_LOCAL_PORT')
         )
 
@@ -34,14 +32,12 @@ def get_dynamodb():
             )
         else:
             g.dynamodb = boto3session.resource('dynamodb')
-    
+
     return g.dynamodb
 
 
 def get_table(table_name):
-    """
-    Return a DynamoDB `Table` instance for table_name.
-    """
+    """Return a DynamoDB `Table` instance for table_name."""
     dynamodb = get_dynamodb()
     if not table_name.startswith('TweetsToText'):
         table_name = 'TweetsToText-' + table_name
