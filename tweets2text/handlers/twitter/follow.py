@@ -4,7 +4,7 @@
 Functions for handling Twitter follow events.
 """
 from time import sleep
-from flask import g
+from flask import current_app
 from requests.exceptions import HTTPError
 from zappa.async import task
 from tweets2text import create_app
@@ -18,9 +18,10 @@ def handle(event):
 
     Return response from Twitter as json.
     """
-    app = create_app()
-
-    sleep(10)
+    app = current_app or create_app()
+    
+    if not app.testing:
+        sleep(10)
 
     user_to_follow = event['source']['id']
     app.logger.info('...following user_id %s' % user_to_follow)
