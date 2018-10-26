@@ -25,7 +25,6 @@ bp = Blueprint('twitter_webhook', __name__)
 
 @bp.before_app_request
 def load_external_resources():
-    print('load_external_resources called!')
     get_dynamodb()
     get_bucket()
     get_api()
@@ -63,7 +62,6 @@ def event_listener():
         'created_at': datetime.now().isoformat(),
         'account_activity': json.dumps(account_activity),
     }
-
     g.dynamodb.Table('TweetsToText-account-activity').put_item(Item=item)
 
     current_app.logger.info('Handling account activity event...')

@@ -17,7 +17,6 @@ def get_dynamodb():
     Return a DynamoDB `Resource` instance.
     """
     if 'dynamodb' not in g:
-        print('lost g.dynamodb!')
         boto3session = get_boto3session()
         
         is_local_host = bool(
@@ -35,9 +34,6 @@ def get_dynamodb():
             )
         else:
             g.dynamodb = boto3session.resource('dynamodb')
-
-    print('inside get_dynamodb()')
-    print(id(g.dynamodb))
     
     return g.dynamodb
 
