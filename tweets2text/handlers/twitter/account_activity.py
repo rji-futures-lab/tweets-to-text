@@ -1,22 +1,20 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Functions for handling Twitter account activity.
-"""
+"""Functions for handling Twitter account activity."""
+import random
 from time import sleep
-from flask import current_app, g
+from flask import current_app
 from requests.exceptions import HTTPError
 from zappa.async import task
 from tweets2text import create_app
+from tweets2text.twitter_api import get_api
 from .follow import handle as handle_follow_event
 from .mention import handle as handle_mention_event
 from ..job import handle as handle_job
 
 
 def is_follow(event, for_user_id):
-    """
-    Return True if the event signals a follow-back.
-    """
+    """Return True if the event signals a follow-back."""
     self_follow = int(event['source']['id']) == for_user_id
     if event['type'] == 'follow' and not self_follow:
         return True
@@ -25,9 +23,7 @@ def is_follow(event, for_user_id):
 
 
 def is_actionable_mention(event, for_user_id):
-    """
-    Return True if the event includes an actionable mention
-    """
+    """Return True if the event includes an actionable mention."""
     authored_by_bot = event['user']['id'] == for_user_id
     is_quote_tweet = event['is_quote_status']
     is_reply = (
@@ -57,8 +53,10 @@ def reply_to_init_mention(init_tweet_id, screen_name):
 
     Return `TwitterResponse` instance.
     """
-    # app = create_app()
-    sleep(5)
+    app = current_app or create_app()
+
+    if not app.testing:
+        sleep(5)
 
     replies = [
         'We got you', 'On it', 'Got it', 'Gotcha', 'Here for you', 'With you',
@@ -78,13 +76,13 @@ def reply_to_init_mention(init_tweet_id, screen_name):
         msg = '{0}\n{1}'.format(
             e,
             '\n'.join([
-                '{code}: {message}'.format(**i) 
+                '{code}: {message}'.format(**i)
                 for i in reply.json()['errors']
             ])
         )
         app.logger.error(msg)
 
-    return response
+    return reply
 
 
 def handle(account_activity):

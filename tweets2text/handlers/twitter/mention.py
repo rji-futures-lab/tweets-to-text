@@ -1,12 +1,8 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Functions for handling Twitter mention events.
-"""
+"""Functions for handling Twitter mention events."""
 import json
-import random
 from boto3.dynamodb.conditions import Key, Attr
-from tweets2text.twitter_api import get_api
 from tweets2text.dynamodb import get_table
 
 
