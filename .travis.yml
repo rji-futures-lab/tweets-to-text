@@ -19,7 +19,10 @@ before_script:
 env:
   global:
     - S3_BUCKET_NAME=test-tweets-to-text-downloads
-    - TWITTER_ACCESS_TOKEN_SECRET=89qiuqhinfiaui4iaTHISISNTREALi8qhiiu
+    - TWITTER_CONSUMER_KEY=foo
+    - TWITTER_CONSUMER_SECRET=bar
+    - TWITTER_ACCESS_TOKEN=whiz
+    - TWITTER_ACCESS_TOKEN_SECRET=bang
 
 script:
   - make test
