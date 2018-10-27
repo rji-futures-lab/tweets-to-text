@@ -17,8 +17,9 @@ before_script:
   - tar -xzf /tmp/dynamodb_local_latest.tar.gz -C /tmp/dynamodb/
 
 env:
-  - BOTO3_REGION=us-east-1
-  - S3_BUCKET_NAME=tweets-to-text-downloads
+  global:
+    - S3_BUCKET_NAME=test-tweets-to-text-downloads
+    - TWITTER_ACCESS_TOKEN_SECRET=89qiuqhinfiaui4iaTHISISNTREALi8qhiiu
 
 script:
   - make test
