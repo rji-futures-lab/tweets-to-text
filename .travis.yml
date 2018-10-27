@@ -16,6 +16,10 @@ before_script:
   - mkdir /tmp/dynamodb/
   - tar -xzf /tmp/dynamodb_local_latest.tar.gz -C /tmp/dynamodb/
 
+env:
+  - BOTO3_REGION=us-east-1
+  - S3_BUCKET_NAME=tweets-to-text-downloads
+
 script:
   - make test
 
