@@ -116,7 +116,9 @@ def handle(account_activity):
                     current_app.logger.info(
                         '...defer reply to initial mention...'
                     )
-                    reply_to_init_mention()
+                    reply_to_init_mention(
+                        event['id'], event['user']['screen_name']
+                    )
                     response['init_mentions'] += 1
                 else:
                     current_app.logger.info('...defer completing job...')

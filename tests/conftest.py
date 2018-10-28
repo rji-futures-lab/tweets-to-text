@@ -68,35 +68,80 @@ def outgoing_follow_data():
 
 
 @pytest.fixture
+def init_mention():
+    data = {
+        "for_user_id": "1017142357932769280",
+        "tweet_create_events": [
+            {
+                "created_at": "Sat Sep 15 15:10:12 +0000 2018",
+                "id": 1040981111734775808,
+                "id_str": "1040981111734775808",
+                "text": "Going live w / @TweetsToText",
+                "truncated": False,
+                "in_reply_to_status_id": None,
+                "in_reply_to_status_id_str": None,
+                "in_reply_to_user_id": None,
+                "in_reply_to_user_id_str": None,
+                "in_reply_to_screen_name": None,
+                "user": {
+                    "id": 258415976,
+                    "id_str": "258415976",
+                    "name": "James Gordon",
+                    "screen_name": "JE_Gordon",
+                    "location": "Columbia, MO",
+                    "utc_offset": None,
+                    "time_zone": None,
+                    "geo_enabled": False,
+                    "lang": "en",
+                    "is_translator": False,
+                    "following": None,
+                    "follow_request_sent": None,
+                    "notifications": None
+                },
+                "geo": None,
+                "coordinates": None,
+                "place": None,
+                "contributors": None,
+                "is_quote_status": False,
+                "quote_count": 0,
+                "reply_count": 0,
+                "retweet_count": 0,
+                "favorite_count": 0,
+                "entities": {
+                    "hashtags": [],
+                    "urls": [],
+                    "user_mentions": [
+                        {
+                            "screen_name": "TweetsToText",
+                            "name": "TweetToText",
+                            "id": 1017142357932769280,
+                            "id_str": "1017142357932769280",
+                            "indices": [2, 15]
+                        }
+                    ],
+                    "symbols": []
+                },
+                "favorited": False,
+                "retweeted": False,
+                "filter_level": "low",
+                "lang": "und",
+                "timestamp_ms": "1537024212188"
+            }
+        ]
+    }
+    return data
+
+
+@pytest.fixture
 def mock_friendships_create(app, requests_mock):
     return requests_mock.post(
         'https://api.twitter.com/1.1/friendships/create.json',
         json=dict()
     )
 
-
-
-# @pytest.fixture
-# def incoming_follow_event(app, incoming_follow_data, requests_mock):
-#     # with dynamodb_set(app):
-#     requests_mock.post(
-#         'https://api.twitter.com/1.1/friendships/create.json',
-#         json=dict()
-#     )
-#     with app.test_client() as c:
-#         response = c.post(
-#             '/webhooks/twitter/',
-#             json=incoming_follow_data
-#         )
-#     return response
-
-
-# @pytest.fixture
-# def outgoing_follow_event(app, outgoing_follow_data):
-#     # with dynamodb_set(app):
-#     with app.test_client() as c:
-#         response = c.post(
-#             '/webhooks/twitter/',
-#             json=outgoing_follow_data
-#         )
-#     return response
+@pytest.fixture
+def mock_statuses_update(app, requests_mock):
+    return requests_mock.post(
+        'https://api.twitter.com/1.1/statuses/update.json',
+        json=dict()
+    )
