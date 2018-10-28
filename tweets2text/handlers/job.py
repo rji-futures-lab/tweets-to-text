@@ -8,7 +8,7 @@ from zappa.async import task
 from tweets2text import create_app
 from tweets2text.dynamodb import get_table
 from tweets2text.s3 import get_bucket, get_s3_file_url
-from tweets2text.twitter_api import get_api
+from tweets2text.twitter_api import get_api, send_dm
 
 
 def get_tweets(user_id, since_id, max_id):
@@ -116,30 +116,6 @@ def store_s3_key(user_id, init_tweet_id, key):
         ExpressionAttributeValues={':val1': key}
     )
     return update
-
-
-def send_dm(to_user_id, message_text):
-    """Send a direct message to user_id containing message_text."""
-    event = {
-        "event": {
-            "type": "message_create",
-            "message_create": {
-                "target": {
-                    "recipient_id": int(to_user_id),
-                },
-                "message_data": {
-                    "text": message_text,
-                }
-            }
-        }
-    }
-
-    sent_dm = get_api().request(
-        'direct_messages/events/new',
-        json.dumps(event),
-    )
-
-    return sent_dm
 
 
 @task(capture_response=True)

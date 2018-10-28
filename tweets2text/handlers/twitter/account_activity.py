@@ -101,7 +101,8 @@ def handle(account_activity):
         for event in account_activity['follow_events']:
             if is_follow(event, for_user_id):
                 current_app.logger.info('...defer on-boarding DM...')
-                handle_follow_event(event)
+                new_follower_id = event['source']['id']
+                handle_follow_event(new_follower_id)
                 response['new_followers'] += 1
             else:
                 current_app.logger.info('...skipping...')

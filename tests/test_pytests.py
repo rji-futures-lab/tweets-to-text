@@ -6,9 +6,7 @@ from tweets2text.dynamodb import get_dynamodb
 
 @contextmanager
 def dynamodb_set(app, dynamodb_client):
-    """
-    Add local dynamodb fixture to the global app context.
-    """
+    """Add local dynamodb fixture to the global app context."""
     def handler(sender, **kwargs):
         g.dynamodb = dynamodb_client
     with appcontext_pushed.connected_to(handler, app):
@@ -16,7 +14,7 @@ def dynamodb_set(app, dynamodb_client):
 
 
 def test_incoming_follow_saved(
-        app, mock_friendships_create, incoming_follow_data, dynamodb
+        app, mock_direct_messages_new, incoming_follow_data, dynamodb
     ):
     """
     Confirm incoming follow event is saved to account-activity DynamoDb table.
@@ -34,7 +32,7 @@ def test_incoming_follow_saved(
 
 
 def test_outgoing_follow_saved(
-        app, mock_friendships_create, outgoing_follow_data, dynamodb
+        app, mock_direct_messages_new, outgoing_follow_data, dynamodb
     ):
     """
     Confirm outgoing follow event is saved to account-activity DynamoDb table.
@@ -52,22 +50,20 @@ def test_outgoing_follow_saved(
 
 
 def test_incoming_follow_call_count(
-        app, mock_friendships_create, incoming_follow_data, dynamodb       
+        app, mock_direct_messages_new, incoming_follow_data, dynamodb       
     ):
-    """
-    Confirm only 1 Twitter API call in response to incoming follow event
-    """
+    """Confirm only 1 Twitter API call in response to incoming follow event."""
     with dynamodb_set(app, dynamodb):
         with app.test_client() as c:
             response = c.post(
                 '/webhooks/twitter/',
                 json=incoming_follow_data
             )
-    assert mock_friendships_create.call_count == 1
+    assert mock_direct_messages_new.call_count == 1
 
 
 def test_outgoing_follow_call_count(
-        app, mock_friendships_create, outgoing_follow_data, dynamodb
+        app, mock_direct_messages_new, outgoing_follow_data, dynamodb
     ):
     """
     Confirm no Twitter API calls in response to a an outgoing follow event.
@@ -78,11 +74,11 @@ def test_outgoing_follow_call_count(
                 '/webhooks/twitter/',
                 json=outgoing_follow_data
             )
-    assert mock_friendships_create.call_count == 0
+    assert mock_direct_messages_new.call_count == 0
 
 
 def test_incoming_follow_response_count(
-        app, mock_friendships_create, incoming_follow_data, dynamodb
+        app, mock_direct_messages_new, incoming_follow_data, dynamodb
     ):
     """
     Confirm new_follower count of 1 in response to an outgoing follow event.
@@ -97,7 +93,7 @@ def test_incoming_follow_response_count(
 
 
 def test_outgoing_follow_response_count(
-        app, mock_friendships_create, outgoing_follow_data, dynamodb
+        app, mock_direct_messages_new, outgoing_follow_data, dynamodb
     ):
     """
     Confirm new_follower count of 0 in response to an outgoing follow event.

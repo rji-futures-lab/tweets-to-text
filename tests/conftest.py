@@ -133,11 +133,12 @@ def init_mention():
 
 
 @pytest.fixture
-def mock_friendships_create(app, requests_mock):
+def mock_direct_messages_new(app, requests_mock):
     return requests_mock.post(
-        'https://api.twitter.com/1.1/friendships/create.json',
+        'https://api.twitter.com/1.1/direct_messages/events/new.json',
         json=dict()
     )
+
 
 @pytest.fixture
 def mock_statuses_update(app, requests_mock):
