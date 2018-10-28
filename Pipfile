@@ -14,7 +14,8 @@ ipython = "*"
 requests-mock = "*"
 blinker = "*"
 pytest-dynamodb = "*"
-python-coveralls = "*"
+pytest-cov = "*"
+coveralls = "*"
 
 [requires]
 python_version = "3.6.6"
