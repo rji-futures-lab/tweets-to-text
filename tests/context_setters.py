@@ -1,3 +1,4 @@
+"""Context managers for setting global app context."""
 from contextlib import contextmanager
 from flask import appcontext_pushed, g
 
