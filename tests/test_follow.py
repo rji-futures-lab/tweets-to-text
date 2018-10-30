@@ -38,7 +38,7 @@ def test_outgoing_follow_saved(
 def test_incoming_follow_dm_count(
         app, mock_direct_messages_new, incoming_follow_activity, dynamodb
         ):
-    """Confirm only 1 Twitter API call in response to incoming follow event."""
+    """Confirm only 1 Twitter API call after incoming follow event."""
     with dynamodb_set(app, dynamodb):
         with app.test_client() as c:
             c.post(
@@ -51,7 +51,7 @@ def test_incoming_follow_dm_count(
 def test_outgoing_follow_dm_count(
         app, mock_direct_messages_new, outgoing_follow_activity, dynamodb
         ):
-    """Confirm no Twitter API calls in response to outgoing follow event."""
+    """Confirm no Twitter API calls after outgoing follow event."""
     with dynamodb_set(app, dynamodb):
         with app.test_client() as c:
             c.post(
@@ -64,7 +64,7 @@ def test_outgoing_follow_dm_count(
 def test_incoming_follow_response_count(
         app, mock_direct_messages_new, incoming_follow_activity, dynamodb
         ):
-    """Confirm new_follower count of 1 in response to outgoing follow event."""
+    """Confirm new_follower count of 1 after outgoing follow event."""
     with dynamodb_set(app, dynamodb):
         with app.test_client() as c:
             response = c.post(
@@ -77,7 +77,7 @@ def test_incoming_follow_response_count(
 def test_outgoing_follow_response_count(
         app, mock_direct_messages_new, outgoing_follow_activity, dynamodb
         ):
-    """Confirm new_follower count of 0 in response to outgoing follow event."""
+    """Confirm new_follower count of 0 after outgoing follow event."""
     with dynamodb_set(app, dynamodb):
         with app.test_client() as c:
             response = c.post(

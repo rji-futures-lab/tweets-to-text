@@ -16,6 +16,7 @@ blinker = "*"
 pytest-dynamodb = "*"
 pytest-cov = "*"
 coveralls = "*"
+moto = "*"
 
 [requires]
 python_version = "3.6.6"
