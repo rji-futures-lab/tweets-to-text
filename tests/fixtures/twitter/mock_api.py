@@ -21,9 +21,9 @@ def mock_statuses_update(app, requests_mock):
 
 
 @pytest.fixture
-def mock_statuses_user_timeline(app, requests_mock):
+def mock_statuses_user_timeline(app, requests_mock, tweet_set):
     """Mock Twitter's statuses/user_timeline endpoint."""
     return requests_mock.post(
         'https://api.twitter.com/1.1/statuses/user_timeline',
-        json=dict()
+        json=tweet_set
     )
