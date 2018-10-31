@@ -1,3 +1,5 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Functions for handling tweet2text jobs."""
 import json
 from uuid import uuid4
@@ -49,10 +51,7 @@ def store_tweets(user_id, init_tweet_id, tweets):
     """Add tweets attribute to DynamoDb job table item."""
     jobs_table = get_table('jobs')
     update = jobs_table.update_item(
-        Key={
-            'user_id': user_id,
-            'init_tweet_id': init_tweet_id
-        },
+        Key=dict(user_id=user_id, init_tweet_id=init_tweet_id),
         UpdateExpression='SET tweets = :val1',
         ExpressionAttributeValues={':val1': json.dumps(tweets)}
     )

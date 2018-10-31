@@ -1,4 +1,4 @@
-"""Fixtures mocking Twitter's API endpoints."""
+"""Test fixtures mocking Twitter's API endpoints."""
 import pytest
 
 

@@ -3,6 +3,7 @@
 """Functions for handling Twitter mention events."""
 import json
 from boto3.dynamodb.conditions import Key, Attr
+from zappa.async import task
 from tweets2text.dynamodb import get_table
 
 
@@ -45,6 +46,7 @@ def create_job(data):
     return job
 
 
+@task(capture_response=True)
 def handle(event):
     """
     Handle an incoming mention event.

@@ -1,5 +1,4 @@
 """Fixtures related to app configuration."""
-import os
 import json
 import boto3
 from moto.s3 import mock_s3
@@ -10,16 +9,24 @@ from tests.context_setters import dynamodb_set
 
 
 @pytest.fixture
-def s3():
-    """Yield a mock AWS S3 client."""
+def moto_s3():
+    """Yield a mock AWS S3 resources."""
     with mock_s3():
-        s3 = boto3.client('s3')
+        s3 = boto3.resource('s3')
         yield s3
 
 
 @pytest.fixture
+def s3_bucket(moto_s3):
+    """Create and return a mock S3 bucket."""
+    bucket = moto_s3.Bucket('test-tweets-to-text-downloads')
+    bucket.create()
+    return bucket
+
+
+@pytest.fixture
 def dynamodb_w_pending_job(app, dynamodb, init_mention):
-    """Yield a mock AWS DynamoDb client with a pending job."""
+    """Yield a mock AWS DynamoDb resource with a pending job."""
     with dynamodb_set(app, dynamodb):
         job = dict(
             user_id=init_mention['user']['id'],
@@ -32,7 +39,7 @@ def dynamodb_w_pending_job(app, dynamodb, init_mention):
 
 
 @pytest.fixture
-def app(dynamodb, s3):
+def app(dynamodb):
     """Yield a configured new app instance for each test."""
     app = create_app({
         'TESTING': True,
@@ -40,7 +47,5 @@ def app(dynamodb, s3):
 
     for table_def in schema:
         dynamodb.create_table(**table_def)
-
-    s3.create_bucket(Bucket='test-tweets-to-text-downloads')
 
     yield app
