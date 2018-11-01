@@ -25,10 +25,4 @@ setup(
         'twitterapi',
         'zappa',
     ],
-    extras_require={
-        'test': [
-            'pytest',
-            'coverage',
-        ],
-    },
 )

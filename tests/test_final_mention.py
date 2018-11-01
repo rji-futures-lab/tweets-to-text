@@ -1,16 +1,16 @@
 """Test behavior after initial mentions of the bot account."""
 import json
 import pytest # noqa
-from .context_setters import aws_resources_set
+from tweets2text.handlers.job import get_tweet_text
+from .context_setters import dynamodb_set
 
 
 def test_final_mention_new_job(
         app, dynamodb_w_pending_job, final_mention_activity,
         mock_statuses_user_timeline, mock_direct_messages_new,
-        s3_bucket
         ):
     """Confirm final mention does not create new item in jobs table."""
-    with aws_resources_set(app, dynamodb_w_pending_job, s3_bucket):
+    with dynamodb_set(app, dynamodb_w_pending_job):
         with app.test_client() as c:
             c.post(
                 '/webhooks/twitter/',
@@ -26,10 +26,9 @@ def test_final_mention_new_job(
 def test_final_mention_get_tweets_count(
         app, dynamodb_w_pending_job, final_mention_activity,
         mock_statuses_user_timeline, mock_direct_messages_new,
-        s3_bucket
         ):
     """Confirm only 1 API call to get tweets after final mention event."""
-    with aws_resources_set(app, dynamodb_w_pending_job, s3_bucket):
+    with dynamodb_set(app, dynamodb_w_pending_job):
         with app.test_client() as c:
             c.post(
                 '/webhooks/twitter/',
@@ -42,10 +41,9 @@ def test_final_mention_get_tweets_count(
 def test_final_mention_dm_count(
         app, dynamodb_w_pending_job, final_mention_activity,
         mock_statuses_user_timeline, mock_direct_messages_new,
-        s3_bucket
         ):
     """Confirm only 1 API call to send dm after final mention event."""
-    with aws_resources_set(app, dynamodb_w_pending_job, s3_bucket):
+    with dynamodb_set(app, dynamodb_w_pending_job):
         with app.test_client() as c:
             c.post(
                 '/webhooks/twitter/',
@@ -57,10 +55,10 @@ def test_final_mention_dm_count(
 def test_tweets_stored(
         app, dynamodb_w_pending_job, final_mention_activity,
         mock_statuses_user_timeline, mock_direct_messages_new,
-        tweet_set, s3_bucket
+        tweet_set
         ):
     """Confirm tweets are stored in jobs table."""
-    with aws_resources_set(app, dynamodb_w_pending_job, s3_bucket):
+    with dynamodb_set(app, dynamodb_w_pending_job):
         with app.test_client() as c:
             c.post(
                 '/webhooks/twitter/',
@@ -72,34 +70,17 @@ def test_tweets_stored(
     assert job['tweets'] == json.dumps(tweet_set)
 
 
-def test_write_to_s3(
-        app, dynamodb_w_pending_job, final_mention_activity,
-        mock_statuses_user_timeline, mock_direct_messages_new,
-        s3_bucket, formatted_text
-        ):
-    """Confirm text was properly written to S3 bucket."""
-    with aws_resources_set(app, dynamodb_w_pending_job, s3_bucket):
-        with app.test_client() as c:
-            c.post(
-                '/webhooks/twitter/',
-                json=final_mention_activity
-            )
-            key = [i.key for i in s3_bucket.objects.all()][0]
-            local_file_path = '/tmp/%s' % key
-            s3_bucket.download_file(key, local_file_path)
-
-            with open(local_file_path) as f:
-                saved_text = f.read()
-    assert saved_text == formatted_text
+def test_formatted_text(tweet_set, formatted_text):
+    """Confirm text was properly formatted."""
+    assert get_tweet_text(tweet_set) == formatted_text
 
 
 def test_final_mention_response_count(
         app, dynamodb_w_pending_job, final_mention_activity,
-        mock_statuses_user_timeline, mock_direct_messages_new,
-        s3_bucket
+        mock_statuses_user_timeline, mock_direct_messages_new
         ):
     """Confirm final_mentions count of 1 after final mention event."""
-    with aws_resources_set(app, dynamodb_w_pending_job, s3_bucket):
+    with dynamodb_set(app, dynamodb_w_pending_job):
         with app.test_client() as c:
             response = c.post(
                 '/webhooks/twitter/',

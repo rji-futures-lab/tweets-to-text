@@ -82,7 +82,7 @@ def get_tweet_text(tweets):
     return '\n\n'.join([i['text'] for i in sorted_tweets])
 
 
-def write_to_s3(tweet_text):
+def write_to_s3(tweet_text, test=None):
     """
     Write tweet_text to a .txt file in the S3 bucket.
 
@@ -94,11 +94,12 @@ def write_to_s3(tweet_text):
     file_uuid = uuid4()
     key = "%s.txt" % str(file_uuid)
 
-    bucket.put_object(
-        ACL='public-read',
-        Body=tweet_text,
-        Key=key,
-    )
+    if not test:
+        bucket.put_object(
+            ACL='public-read',
+            Body=tweet_text,
+            Key=key,
+        )
 
     return key
 
@@ -152,7 +153,7 @@ def handle(job):
     store_tweets(user_id, init_tweet_id, tweets)
 
     tweet_text = get_tweet_text(tweets)
-    key = write_to_s3(tweet_text)
+    key = write_to_s3(tweet_text, test=app.testing)
     store_s3_key(user_id, init_tweet_id, key)
 
     url = get_s3_file_url(key)

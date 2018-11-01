@@ -46,3 +46,13 @@ def test_init_mention_response_count(
             )
 
     assert response.get_json()['init_mentions'] == 1
+
+# TODO:
+# test_self_mention_no_job
+# test_quote_tweet_no_job
+# test_reply_mention_no_job
+# test_retweet_mention_no_job
+# test_self_mention_response_count
+# test_quote_tweet_response_count
+# test_reply_mention_response_count
+# test_retweet_mention_response_count
