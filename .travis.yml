@@ -22,9 +22,6 @@ env:
     - TWITTER_CONSUMER_SECRET=bar
     - TWITTER_ACCESS_TOKEN=whiz
     - TWITTER_ACCESS_TOKEN_SECRET=bang
-    - AWS_ACCESS_KEY_ID=itsasecret
-    - AWS_SECRET_ACCESS_KEY=ssshhhhhhhhh
-    - AWS_DEFAULT_REGION=us-east-1
 
 script:
   - make test
