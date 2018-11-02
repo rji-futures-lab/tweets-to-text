@@ -119,9 +119,9 @@ def store_s3_key(user_id, init_tweet_id, key):
 
 
 @task(capture_response=True)
-def handle(job):
+def handle(user_id, init_tweet_id, final_tweet_id):
     """
-    Handle a job.
+    Handle a job with init_tweet_id.
 
     More specifically:
         1. Get all the tweets
@@ -134,31 +134,28 @@ def handle(job):
     """
     app = current_app or create_app()
 
-    user_id = job['user_id']
-    init_tweet_id = job['init_tweet_id']
-    final_tweet_id = job['final_tweet_id']
+    with app.app_context():
+        try:
+            tweets = get_tweets(user_id, init_tweet_id, final_tweet_id)
+        except HTTPError as e:
+            msg = '{0}\n{1}'.format(
+                e,
+                '\n'.join([
+                    '{code}: {message}'.format(**i)
+                    for i in tweets['errors']
+                ])
+            )
+            app.logger.error(msg)
 
-    try:
-        tweets = get_tweets(user_id, init_tweet_id, final_tweet_id)
-    except HTTPError as e:
-        msg = '{0}\n{1}'.format(
-            e,
-            '\n'.join([
-                '{code}: {message}'.format(**i)
-                for i in tweets['errors']
-            ])
-        )
-        app.logger.error(msg)
+        store_tweets(user_id, init_tweet_id, tweets)
 
-    store_tweets(user_id, init_tweet_id, tweets)
+        tweet_text = get_tweet_text(tweets)
+        key = write_to_s3(tweet_text, test=app.testing)
+        store_s3_key(user_id, init_tweet_id, key)
 
-    tweet_text = get_tweet_text(tweets)
-    key = write_to_s3(tweet_text, test=app.testing)
-    store_s3_key(user_id, init_tweet_id, key)
-
-    url = get_s3_file_url(key)
+        url = get_s3_file_url(key)
     # TODO: Maybe format the message to be more user-friendly
-    sent_dm = send_dm(user_id, url)
+        sent_dm = send_dm(user_id, url)
 
     try:
         sent_dm.response.raise_for_status()
@@ -172,4 +169,4 @@ def handle(job):
         )
         app.logger.error(msg)
 
-    return sent_dm.response
+    return sent_dm.json()

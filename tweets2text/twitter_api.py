@@ -3,8 +3,9 @@
 """Initialize a connection to Twitter."""
 import json
 import os
-from flask import g
+from flask import current_app, g
 from TwitterAPI import TwitterAPI
+from tweets2text import create_app
 
 
 def get_api():
@@ -28,6 +29,8 @@ def get_api():
 
 def send_dm(to_user_id, message_text):
     """Send a direct message to user_id containing message_text."""
+    app = current_app or create_app()
+
     data = {
         "event": {
             "type": "message_create",
@@ -42,9 +45,10 @@ def send_dm(to_user_id, message_text):
         }
     }
 
-    sent_dm = get_api().request(
-        'direct_messages/events/new',
-        json.dumps(data),
-    )
+    with app.app_context():
+        sent_dm = get_api().request(
+            'direct_messages/events/new',
+            json.dumps(data),
+        )
 
     return sent_dm

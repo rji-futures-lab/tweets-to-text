@@ -68,7 +68,8 @@ def reply_to_init_mention(init_tweet_id, screen_name):
     status = '@{0} {1}'.format(screen_name, random.choice(replies))
     params = dict(status=status, in_reply_to_status_id=init_tweet_id)
 
-    reply = get_api().request('statuses/update', params)
+    with app.app_context():
+        reply = get_api().request('statuses/update', params)
 
     try:
         reply.response.raise_for_status()
@@ -82,7 +83,7 @@ def reply_to_init_mention(init_tweet_id, screen_name):
         )
         app.logger.error(msg)
 
-    return reply
+    return reply.json()
 
 
 def handle(account_activity):
@@ -122,8 +123,11 @@ def handle(account_activity):
                     )
                     response['init_mentions'] += 1
                 else:
-                    current_app.logger.info('...defer completing job...')
-                    handle_job(job)
+                    handle_job(
+                        int(job['user_id']),
+                        int(job['init_tweet_id']),
+                        int(job['final_tweet_id']),
+                    )
                     response['final_mentions'] += 1
             else:
                 current_app.logger.info('...skipping...')
