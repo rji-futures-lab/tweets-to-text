@@ -75,7 +75,7 @@ def get_tweet_text(tweets):
     sorted_tweets = sorted(tweets, key=lambda k: k['id'])
 
     last_tweet = sorted_tweets.pop(-1)
-    last_tweet['text'] = last_tweet['full_text'].replace(
+    last_tweet['full_text'] = last_tweet['full_text'].replace(
         '@TweetsToText', ''
     ).strip()
     sorted_tweets.append(last_tweet)
