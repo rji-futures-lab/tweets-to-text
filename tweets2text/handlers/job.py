@@ -25,6 +25,7 @@ def get_tweets(user_id, since_id, max_id):
         'max_id': max_id,
         'count': 200,
         'include_rts': True,
+        'tweet_mode': 'extended',
     }
 
     response = get_api().request(
