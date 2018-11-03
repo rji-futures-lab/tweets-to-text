@@ -75,12 +75,12 @@ def get_tweet_text(tweets):
     sorted_tweets = sorted(tweets, key=lambda k: k['id'])
 
     last_tweet = sorted_tweets.pop(-1)
-    last_tweet['text'] = last_tweet['text'].replace(
+    last_tweet['text'] = last_tweet['full_text'].replace(
         '@TweetsToText', ''
     ).strip()
     sorted_tweets.append(last_tweet)
 
-    return '\n\n'.join([i['text'] for i in sorted_tweets])
+    return '\n\n'.join([i['full_text'] for i in sorted_tweets])
 
 
 def write_to_s3(tweet_text, test=None):
