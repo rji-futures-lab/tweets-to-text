@@ -100,6 +100,7 @@ def write_to_s3(tweet_text, test=None):
             ACL='public-read',
             Body=tweet_text,
             Key=key,
+            ContentType='text/plain; charset=utf-8',
         )
 
     return key
