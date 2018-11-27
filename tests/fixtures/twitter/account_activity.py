@@ -67,7 +67,7 @@ def init_mention(user_account, bot_account):
         created_at="Sat Sep 15 15:10:12 +0000 2018",
         id=1040981111734775808,
         id_str="1040981111734775808",
-        full_text="Going live w / @TweetsToText",
+        text="Going live @TweetsToText",
         in_reply_to_status_id=None,
         in_reply_to_status_id_str=None,
         in_reply_to_user_id=None,
@@ -80,8 +80,8 @@ def init_mention(user_account, bot_account):
             urls=[],
             user_mentions=[
                 dict(
-                    screen_name="TweetsToText",
-                    name="TweetsToText",
+                    screen_name=bot_account['screen_name'],
+                    name=bot_account['name'],
                     id=bot_account['id'],
                     id_str=bot_account['id_str'],
                     indices=[2, 15]

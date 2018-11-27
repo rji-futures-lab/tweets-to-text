@@ -1,7 +1,7 @@
 """Test behavior after initial mentions of the bot account."""
 import json
 import pytest # noqa
-from tweets2text.handlers.job import get_tweet_text
+from tweets2text.handlers.job import get_init_tweet, get_tweet_text
 from .context_setters import dynamodb_set
 
 
@@ -70,8 +70,10 @@ def test_tweets_stored(
     assert job['tweets'] == json.dumps(tweet_set)
 
 
-def test_formatted_text(tweet_set, formatted_text):
+def test_formatted_text(init_mention, tweet_set, formatted_text):
     """Confirm text was properly formatted."""
+    init_mention['full_text'] = init_mention['text']
+    tweet_set.append(init_mention)
     assert get_tweet_text(tweet_set) == formatted_text
 
 

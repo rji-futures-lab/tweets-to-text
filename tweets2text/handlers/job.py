@@ -59,6 +59,22 @@ def store_tweets(user_id, init_tweet_id, tweets):
     return update
 
 
+def get_init_tweet(user_id, init_tweet_id):
+    """Get the text of the initial tweet."""
+    jobs_table = get_table('jobs')
+
+    job = jobs_table.get_item(
+        Key=dict(user_id=user_id, init_tweet_id=init_tweet_id)
+    )
+    print(job)
+
+    tweet = json.loads(job['Item']['init_event_json'])
+    # TODO: Always get the full text of the initial tweet?
+    tweet['full_text'] = tweet['text']
+
+    return tweet
+
+
 def get_tweet_text(tweets):
     """
     Sort and format text from tweets.
@@ -68,19 +84,18 @@ def get_tweet_text(tweets):
         2. Add two newlines between each tweet.
         3. TODO: Attribute re-tweets to the original author.
         4. TODO: Denote replies.
-        5. Remove bot @TweetsToText from the final tweet.
+        5. Remove bot @TweetsToText from initial and final tweets.
 
     Return a string.
     """
     sorted_tweets = sorted(tweets, key=lambda k: k['id'])
 
-    last_tweet = sorted_tweets.pop(-1)
-    last_tweet['full_text'] = last_tweet['full_text'].replace(
-        '@TweetsToText', ''
-    ).strip()
-    sorted_tweets.append(last_tweet)
+    text = '\n\n'.join([
+        i['full_text'].replace('@TweetsToText', '').strip()
+        for i in sorted_tweets
+    ])
 
-    return '\n\n'.join([i['full_text'] for i in sorted_tweets])
+    return text
 
 
 def write_to_s3(tweet_text, test=None):
@@ -148,27 +163,31 @@ def handle(user_id, init_tweet_id, final_tweet_id):
                 ])
             )
             app.logger.error(msg)
+        else:
+            store_tweets(user_id, init_tweet_id, tweets)
 
-        store_tweets(user_id, init_tweet_id, tweets)
+            init_tweet = get_init_tweet(user_id, init_tweet_id)
+            tweets.append(init_tweet)
 
-        tweet_text = get_tweet_text(tweets)
-        key = write_to_s3(tweet_text, test=app.testing)
-        store_s3_key(user_id, init_tweet_id, key)
+            tweet_text = get_tweet_text(tweets)
 
-        url = get_s3_file_url(key)
-    # TODO: Maybe format the message to be more user-friendly
-        sent_dm = send_dm(user_id, url)
+            key = write_to_s3(tweet_text, test=app.testing)
+            store_s3_key(user_id, init_tweet_id, key)
 
-    try:
-        sent_dm.response.raise_for_status()
-    except HTTPError as e:
-        msg = '{0}\n{1}'.format(
-            e,
-            '\n'.join([
-                '{code}: {message}'.format(**i)
-                for i in sent_dm.json()['errors']
-            ])
-        )
-        app.logger.error(msg)
+            url = get_s3_file_url(key)
+            # TODO: Maybe format the message to be more user-friendly
+            sent_dm = send_dm(user_id, url)
 
-    return sent_dm.json()
+            try:
+                sent_dm.response.raise_for_status()
+            except HTTPError as e:
+                msg = '{0}\n{1}'.format(
+                    e,
+                    '\n'.join([
+                        '{code}: {message}'.format(**i)
+                        for i in sent_dm.json()['errors']
+                    ])
+                )
+                app.logger.error(msg)
+
+            return sent_dm.json()

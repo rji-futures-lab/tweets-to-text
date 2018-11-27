@@ -5,7 +5,9 @@ import pytest
 @pytest.fixture
 def formatted_text():
     """Return properly formatted tweet text (str)."""
-    text = """TweetsToText is a bot that lives on Twitter.
+    text = """Going live
+
+TweetsToText is a bot that lives on Twitter.
 
 It collects your tweets into plain text files.
 
