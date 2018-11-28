@@ -9,6 +9,7 @@ from zappa.async import task
 from tweets2text import create_app
 from tweets2text.twitter_api import get_api
 from .follow import handle as handle_follow_event
+from .mention import get_pending_job
 from .mention import handle as handle_mention_event
 from ..job import handle as handle_job
 
@@ -30,18 +31,25 @@ def is_actionable_mention(event, for_user_id):
         bool(event['in_reply_to_status_id_str']) or
         bool(event['in_reply_to_status_id'])
     )
+    is_self_reply = (
+        event['in_reply_to_user_id'] == event['user']['id']
+    )
     is_retweet = 'retweeted_status' in event.keys()
+    has_job = bool(get_pending_job(event['user']['id']))
 
     if (
-        not authored_by_bot and
-        not is_quote_tweet and
-        not is_reply and
-        not is_retweet
+        authored_by_bot or
+        is_quote_tweet or
+        is_retweet
 
     ):
-        is_actionable = True
-    else:
         is_actionable = False
+    elif is_self_reply and has_job:
+        is_actionable = True
+    elif is_reply:
+        is_actionable = False
+    else:
+        is_actionable = True
 
     return is_actionable
 

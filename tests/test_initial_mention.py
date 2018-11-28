@@ -48,15 +48,15 @@ def test_init_mention_response_count(
     assert response.get_json()['init_mentions'] == 1
 
 
-def test_self_mention_no_job(
-        app, dynamodb, self_mention_activity, mock_statuses_update
+def test_mention_by_bot_no_job(
+        app, dynamodb, mention_by_bot_activity, mock_statuses_update
         ):
     """Confirm self mention creates no item in jobs table."""
     with dynamodb_set(app, dynamodb):
         with app.test_client() as c:
             c.post(
                 '/webhooks/twitter/',
-                json=self_mention_activity
+                json=mention_by_bot_activity
             )
             table_scan = dynamodb.Table(
                 'TweetsToText-jobs'
@@ -65,29 +65,29 @@ def test_self_mention_no_job(
     assert table_scan == 0
 
 
-def test_self_mention_no_reply(
-        app, dynamodb, self_mention_activity, mock_statuses_update
+def test_mention_by_bot_no_reply(
+        app, dynamodb, mention_by_bot_activity, mock_statuses_update
         ):
     """Confirm no Twitter API after self mention event."""
     with dynamodb_set(app, dynamodb):
         with app.test_client() as c:
             c.post(
                 '/webhooks/twitter/',
-                json=self_mention_activity
+                json=mention_by_bot_activity
             )
 
     assert mock_statuses_update.call_count == 0
 
 
-def test_self_mention_response_count(
-        app, dynamodb, self_mention_activity, mock_statuses_update
+def test_mention_by_bot_response_count(
+        app, dynamodb, mention_by_bot_activity, mock_statuses_update
         ):
     """Confirm init_mention count of 0 after self mention event."""
     with dynamodb_set(app, dynamodb):
         with app.test_client() as c:
             response = c.post(
                 '/webhooks/twitter/',
-                json=self_mention_activity
+                json=mention_by_bot_activity
             )
 
     assert response.get_json()['init_mentions'] == 0
@@ -138,15 +138,15 @@ def test_quote_tweet_response_count(
     assert response.get_json()['init_mentions'] == 0
 
 
-def test_reply_mention_no_job(
-        app, dynamodb, reply_mention_activity, mock_statuses_update
+def test_non_self_reply_mention_no_job(
+        app, dynamodb, non_self_reply_mention_activity, mock_statuses_update
         ):
     """Confirm reply mention creates no item in jobs table."""
     with dynamodb_set(app, dynamodb):
         with app.test_client() as c:
             c.post(
                 '/webhooks/twitter/',
-                json=reply_mention_activity
+                json=non_self_reply_mention_activity
             )
             table_scan = dynamodb.Table(
                 'TweetsToText-jobs'
@@ -155,29 +155,29 @@ def test_reply_mention_no_job(
     assert table_scan == 0
 
 
-def test_reply_mention_no_reply(
-        app, dynamodb, reply_mention_activity, mock_statuses_update
+def test_non_self_reply_mention_no_reply(
+        app, dynamodb, non_self_reply_mention_activity, mock_statuses_update
         ):
     """Confirm no Twitter API after reply mention event."""
     with dynamodb_set(app, dynamodb):
         with app.test_client() as c:
             c.post(
                 '/webhooks/twitter/',
-                json=reply_mention_activity
+                json=non_self_reply_mention_activity
             )
 
     assert mock_statuses_update.call_count == 0
 
 
-def test_reply_mention_response_count(
-        app, dynamodb, reply_mention_activity, mock_statuses_update
+def test_non_self_reply_mention_response_count(
+        app, dynamodb, non_self_reply_mention_activity, mock_statuses_update
         ):
     """Confirm init_mention count of 0 after reply mention event."""
     with dynamodb_set(app, dynamodb):
         with app.test_client() as c:
             response = c.post(
                 '/webhooks/twitter/',
-                json=reply_mention_activity
+                json=non_self_reply_mention_activity
             )
 
     assert response.get_json()['init_mentions'] == 0

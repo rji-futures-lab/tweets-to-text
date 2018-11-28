@@ -89,3 +89,31 @@ def test_final_mention_response_count(
                 json=final_mention_activity
             )
     assert response.get_json()['final_mentions'] == 1
+
+
+
+def test_self_reply_with_job(
+        app, dynamodb_w_pending_job, self_reply_mention_activity,
+        mock_statuses_user_timeline, mock_direct_messages_new,
+        user_account, init_mention, self_reply_mention
+        ):
+    """Confirm self reply with pending job closes job."""
+    with dynamodb_set(app, dynamodb_w_pending_job):
+        with app.test_client() as c:
+            c.post(
+                '/webhooks/twitter/',
+                json=self_reply_mention_activity
+            )
+
+            jobs_table = dynamodb_w_pending_job.Table(
+                'TweetsToText-jobs'
+            )
+
+    job = jobs_table.get_item(
+        Key=dict(
+            user_id=user_account['id'],
+            init_tweet_id=init_mention['id']
+        )
+    )['Item']
+
+    assert job['final_tweet_id'] == self_reply_mention['id']

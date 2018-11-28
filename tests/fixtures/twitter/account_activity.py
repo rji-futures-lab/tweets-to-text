@@ -27,6 +27,18 @@ def user_account():
 
 
 @pytest.fixture
+def audience_account():
+    """Return account data (dict) for a Twitter user."""
+    data = dict(
+        id=1267635120,
+        id_str='1267635120',
+        name="Innovation & Futures Lab",
+        screen_name='RJIFuturesLab',
+    )
+    return data
+
+
+@pytest.fixture
 def incoming_follow_activity(bot_account, user_account):
     """Return account activity data (dict) for incoming follow event."""
     data = dict(
@@ -213,13 +225,13 @@ def tweet_set(tweet1, tweet2, tweet3, final_mention):
 
 
 @pytest.fixture
-def self_mention(bot_account):
+def mention_by_bot(bot_account):
     """Return a tweet authored by the bot account."""
     data = dict(
         created_at="Sat Sep 15 15:10:12 +0000 2018",
         id=1040981111734775808,
         id_str="1040981111734775808",
-        full_text="Going live w / @TweetsToText",
+        full_text="@TweetsToText",
         in_reply_to_status_id=None,
         in_reply_to_status_id_str=None,
         in_reply_to_user_id=None,
@@ -232,8 +244,8 @@ def self_mention(bot_account):
             urls=[],
             user_mentions=[
                 dict(
-                    screen_name="TweetsToText",
-                    name="TweetsToText",
+                    screen_name=bot_account['screen_name'],
+                    name=bot_account['name'],
                     id=bot_account['id'],
                     id_str=bot_account['id_str'],
                     indices=[2, 15]
@@ -281,18 +293,18 @@ def quote_tweet(user_account, bot_account):
 
 
 @pytest.fixture
-def reply_mention(user_account, bot_account):
-    """Return tweet data (dict) with reply mention."""
+def self_reply_mention(user_account, bot_account, init_mention):
+    """Return tweet data (dict) of user's self reply."""
     data = dict(
         created_at="Sat Sep 15 15:10:12 +0000 2018",
         id=1040981111734775818,
         id_str="1040981111734775818",
-        full_text="@Bot2BotAction @TweetsToText Go get em",
-        in_reply_to_status_id=1040981111734775808,
-        in_reply_to_status_id_str='1040981111734775808',
+        full_text="That's a wrap @TweetsToText",
+        in_reply_to_status_id=init_mention['id'],
+        in_reply_to_status_id_str=init_mention['id_str'],
         in_reply_to_user_id=user_account['id'],
         in_reply_to_user_id_str=user_account['id_str'],
-        in_reply_to_screen_name='Bot2BotAction',
+        in_reply_to_screen_name=user_account['screen_name'],
         user=user_account,
         is_quote_status=False,
         entities=dict(
@@ -306,6 +318,47 @@ def reply_mention(user_account, bot_account):
                     id_str=bot_account['id_str'],
                     indices=[2, 15]
                 )
+            ],
+            symbols=[]
+        ),
+        timestamp_ms="1537024212188",
+    )
+    return data
+
+
+@pytest.fixture
+def non_self_reply_mention(user_account, bot_account, audience_account):
+    """Return tweet data (dict) with reply mention."""
+    data = dict(
+        created_at="Sat Sep 15 15:10:12 +0000 2018",
+        id=1040981111734775817,
+        id_str="1040981111734775817",
+        full_text="@Bot2BotAction @TweetsToText Go get em",
+        in_reply_to_status_id=1040981111734775808,
+        in_reply_to_status_id_str='1040981111734775808',
+        in_reply_to_user_id=user_account['id'],
+        in_reply_to_user_id_str=user_account['id_str'],
+        in_reply_to_screen_name='Bot2BotAction',
+        user=audience_account,
+        is_quote_status=False,
+        entities=dict(
+            hashtags=[],
+            urls=[],
+            user_mentions=[
+                dict(
+                    screen_name=bot_account['screen_name'],
+                    name=bot_account['name'],
+                    id=bot_account['id'],
+                    id_str=bot_account['id_str'],
+                    indices=[2, 15]
+                ),
+                dict(
+                    screen_name=user_account['screen_name'],
+                    name=user_account['name'],
+                    id=user_account['id'],
+                    id_str=user_account['id_str'],
+                    indices=[2, 15]
+                ),
             ],
             symbols=[]
         ),
@@ -370,11 +423,10 @@ def final_mention_activity(bot_account, final_mention):
 
 
 @pytest.fixture
-def self_mention_activity(bot_account, self_mention):
-    """Return account activity data (dict) for self mention event."""
+def mention_by_bot_activity(bot_account, mention_by_bot):
+    """Return account activity data (dict) for mention by bot event."""
     data = dict(
         for_user_id=bot_account["id_str"],
-        tweet_create_events=[self_mention]
     )
     return data
 
@@ -390,11 +442,21 @@ def quote_tweet_activity(bot_account, quote_tweet):
 
 
 @pytest.fixture
-def reply_mention_activity(bot_account, reply_mention):
-    """Return account activity data (dict) for reply mention event."""
+def self_reply_mention_activity(bot_account, self_reply_mention):
+    """Return account activity data (dict) for self reply mention event."""
     data = dict(
         for_user_id=bot_account["id_str"],
-        tweet_create_events=[reply_mention]
+        tweet_create_events=[self_reply_mention]
+    )
+    return data
+
+
+@pytest.fixture
+def non_self_reply_mention_activity(bot_account, non_self_reply_mention):
+    """Return account activity data (dict) for reply from other user event."""
+    data = dict(
+        for_user_id=bot_account["id_str"],
+        tweet_create_events=[non_self_reply_mention]
     )
     return data
 
