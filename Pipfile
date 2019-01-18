@@ -5,6 +5,10 @@ name = "pypi"
 
 [packages]
 "tweets2text" = {editable = true, path = "."}
+flask = "*"
+python-dotenv = "*"
+twitterapi = "*"
+zappa = "*"
 
 [dev-packages]
 "flake8" = "*"
