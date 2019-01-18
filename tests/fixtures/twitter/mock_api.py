@@ -12,6 +12,15 @@ def mock_direct_messages_new(app, requests_mock):
 
 
 @pytest.fixture
+def mock_typing_indicator(app, requests_mock):
+    """Mock Twitter's direct_messages/indicate_typing endpoint."""
+    return requests_mock.post(
+        'https://api.twitter.com/1.1/direct_messages/indicate_typing.json',
+        json=dict()
+    )
+
+
+@pytest.fixture
 def mock_statuses_update(app, requests_mock):
     """Mock Twitter's statuses/update endpoint."""
     return requests_mock.post(

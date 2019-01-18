@@ -52,3 +52,18 @@ def send_dm(to_user_id, message_text):
         )
 
     return sent_dm
+
+
+def send_typing_indicator(to_user_id):
+    """Send a typing indicator."""
+    app = current_app or create_app()
+
+    params = dict(recipient_id=to_user_id)
+
+    with app.app_context():
+        sent_indicator = get_api().request(
+            'direct_messages/indicate_typing',
+            params,
+        )
+
+    return sent_indicator
