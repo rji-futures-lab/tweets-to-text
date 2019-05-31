@@ -11,9 +11,7 @@ python:
 install: "make"
 
 before_script:
-  - wget http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz -O /tmp/dynamodb_local_latest.tar.gz
-  - mkdir /tmp/dynamodb/
-  - tar -xzf /tmp/dynamodb_local_latest.tar.gz -C /tmp/dynamodb/
+  - make localdynamodb
 
 env:
   global:
