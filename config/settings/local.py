@@ -17,7 +17,6 @@ MIDDLEWARE = MIDDLEWARE + [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -38,7 +37,6 @@ LOGGING = {
         },
     },
 }
-
 
 STATIC_ROOT = 'static/'
 STATIC_URL = '/static/'

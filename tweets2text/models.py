@@ -2,6 +2,7 @@ import json
 import random
 import uuid
 from time import sleep
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
 from django.utils import timezone
@@ -55,7 +56,8 @@ class User(TwitterMixin, models.Model):
             )
         )
         self.send_typing_indicator()
-        sleep(3.1)
+        if not settings.TESTING:
+            sleep(3.1)
 
         sent_dm = self.twitter_api.request(
             'direct_messages/events/new',
@@ -69,7 +71,6 @@ class User(TwitterMixin, models.Model):
             self.send_dm(m)
 
     def send_typing_indicator(self):
-
         params = dict(recipient_id=self.id_str)
 
         sent_indicator = self.twitter_api.request(
@@ -81,6 +82,10 @@ class User(TwitterMixin, models.Model):
 
     class Meta:
         indexes = [
+            models.Index(
+                fields=['id_str', ],
+                name='id_str_index',
+            ),
             models.Index(
                 fields=['last_follow_at', ],
                 name='last_follow_at_index',
@@ -123,7 +128,7 @@ class AccountActivity(models.Model):
             event_list = [
                 TwitterObject(**e) for e in self.json_data[message_type]
             ]
-        except IndexError:
+        except KeyError:
             event_list = []
 
         return event_list
@@ -147,8 +152,8 @@ class AccountActivity(models.Model):
             self._follow_events = [
                 f for f in self.get_events_by_type('follow_events')
                 if f.type == 'follow' and
-                f.target == self.for_user_id and
-                f.source != self.for_user_id
+                f.target['id_str'] == self.json_data['for_user_id'] and
+                f.source['id_str'] != self.json_data['for_user_id']
             ]
 
         return self._follow_events
@@ -161,8 +166,8 @@ class AccountActivity(models.Model):
             self._unfollow_events = [
                 f for f in self.get_events_by_type('unfollow_events')
                 if f.type == 'unfollow' and
-                f.target == self.for_user_id and
-                f.source != self.for_user_id
+                f.target['id_str'] == self.json_data['for_user_id'] and
+                f.source['id_str'] != self.json_data['for_user_id']
             ]
 
         return self._unfollow_events
@@ -283,7 +288,8 @@ class TweetTextCompilation(TwitterMixin, models.Model):
         return self.save()
 
     def reply_to_init_tweet(self):
-        sleep(5)
+        if not settings.TESTING:
+            sleep(5)
 
         status = '@{0} {1}'.format(
             self.user.screen_name, random.choice(constants.replies)

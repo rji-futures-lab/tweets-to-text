@@ -3,6 +3,7 @@ import os
 import configparser
 
 DEBUG = False
+TESTING = False
 
 ROOT_DIR = os.path.dirname(
     os.path.dirname(

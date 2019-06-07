@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import hmac
+import json
 from django.conf import settings
 from django.http import HttpResponse, Http404, JsonResponse
 from django.views.generic.base import TemplateView, View
@@ -47,8 +48,9 @@ class TwitterWebhook(View):
 
         Twitter makes POST method calls to this route.
         """
+        # import ipdb; ipdb.set_trace()
         aa_obj = AccountActivity.objects.create(
-            json_data=request.get_json(),
+            json_data=json.loads(request.body),
         )
 
         handle_account_activity(aa_obj.id)

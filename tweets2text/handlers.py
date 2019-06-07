@@ -30,11 +30,11 @@ def handle_account_activity(account_activity_id):
             user.save()
             user.send_dm('Welcome back!')
 
-        user.follow_history.create(event_json=follow)
+        user.follow_history.create(event_json=follow.__dict__)
 
     for unfollow in activity.unfollow_events:
-        user.objects.get(id=unfollow.source['id'])
-        user.follow_history.create(event_json=unfollow)
+        user = User.objects.get(id=unfollow.source['id'])
+        user.follow_history.create(event_json=unfollow.__dict__)
 
     for tweet in activity.tweet_create_events:
         if tweet.is_actionable_mention:

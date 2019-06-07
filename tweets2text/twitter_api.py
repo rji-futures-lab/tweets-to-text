@@ -14,7 +14,7 @@ class TwitterMixin(object):
                 settings.TWITTER_CONSUMER_KEY,
                 settings.TWITTER_CONSUMER_SECRET,
                 settings.TWITTER_ACCESS_TOKEN,
-                settings.TWITTER_ACCESS_TOKEN_SECRE,
+                settings.TWITTER_ACCESS_TOKEN_SECRET,
             )
 
         return self._twitter_api
