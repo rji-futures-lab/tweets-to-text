@@ -1,15 +1,17 @@
+from django.test import TestCase
 from django.utils import timezone
 from tweets2text.constants import instructions
 from tweets2text import fixtures
 from tweets2text.models import User
-from .base import FollowBaseTestCase
+from .base import FollowTestBase
 
 
-class FollowTestCase(FollowBaseTestCase):
+class FollowTestCase(FollowTestBase, TestCase):
     """Test case for receiving a follow event."""
+
     account_activity = fixtures.account_activity_w_follow_event
 
-    def test_user_created(self):
+    def test_user_count(self):
         count = User.objects.count()
         self.assertEqual(count, 1)
 
@@ -33,20 +35,21 @@ class FollowTestCase(FollowBaseTestCase):
             event_json__type='follow'
         ).count()
 
-        self.assertEqual(count, 1)
+        self.assertEqual(1, count)
 
 
-class UnfollowTestCase(FollowBaseTestCase):
+class UnfollowTestCase(FollowTestBase, TestCase):
     """Test case for receiving an unfollow event."""
+
     account_activity = fixtures.account_activity_w_unfollow_event
 
     @classmethod
-    def setUpTestData(self):
+    def setUpTestData(cls):
         user_data = fixtures.user.copy()
         user_data['json_data'] = fixtures.user
         User.objects.create(**user_data)
 
-    def test_user_created(self):
+    def test_user_count(self):
         count = User.objects.count()
         self.assertEqual(count, 1)
 
@@ -68,19 +71,21 @@ class UnfollowTestCase(FollowBaseTestCase):
             event_json__type='unfollow'
         ).count()
 
-        self.assertEqual(count, 1)
+        self.assertEqual(1, count)
 
 
-class RefollowTestCase(FollowBaseTestCase):
+class RefollowTestCase(FollowTestBase, TestCase):
+    """Test case for receiving returning follower event."""
+
     account_activity = fixtures.account_activity_w_follow_event
 
     @classmethod
-    def setUpTestData(self):
+    def setUpTestData(cls):
         user_data = fixtures.user.copy()
         user_data['json_data'] = fixtures.user
         user_data['last_follow_at'] = timezone.datetime(1980, 11, 13)
-        self.user = User.objects.create(**user_data)
-        self.user.follow_history.create(event_json=fixtures.follow_event)
+        cls.user = User.objects.create(**user_data)
+        cls.user.follow_history.create(event_json=fixtures.follow_event)
 
     def test_dm_call_count(self):
         self.assertEqual(
@@ -97,7 +102,7 @@ class RefollowTestCase(FollowBaseTestCase):
             event_json__type='follow'
         ).count()
 
-        self.assertEqual(count, 2)
+        self.assertEqual(2, count)
 
     def test_last_follow_at(self):
         self.assertEqual(
@@ -106,12 +111,14 @@ class RefollowTestCase(FollowBaseTestCase):
         )
 
 
-class BotFollowSourceTestCase(FollowBaseTestCase):
+class BotFollowSourceTestCase(FollowTestBase, TestCase):
+    """Test case for receiving follow event by the bot."""
+
     account_activity = fixtures.account_activity_w_bot_event
 
     def test_user_not_created(self):
         count = User.objects.count()
-        self.assertEqual(count, 0)
+        self.assertEqual(0, count)
 
     def test_dm_call_count(self):
         self.assertEqual(

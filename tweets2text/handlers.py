@@ -1,4 +1,3 @@
-from django.urls import reverse
 from django.utils import timezone
 from zappa.async import task
 from tweets2text.models import (
@@ -38,16 +37,17 @@ def handle_account_activity(account_activity_id):
 
     for tweet in activity.tweet_create_events:
         if tweet.is_actionable_mention:
-            user = user.as_tweets2text_user
+            user = tweet.user_obj.as_tweets2text_user
 
             if user.has_pending_compilation:
                 user.pending_compilation.refresh_init_tweet()
 
-            if user.has_pending_compilations:
-                user.pending_compilation.complete()
-                url = reverse(
-                    'compilation', args=[user.pending_compilation.id]
-                )
+            if user.has_pending_compilation:
+                pending_compilation = user.pending_compilation
+                pending_compilation.final_tweet_json = tweet.__dict__
+                pending_compilation.save()
+                pending_compilation.complete()
+                url = pending_compilation.get_absolute_url()
                 user.send_dm(url)
 
             else:

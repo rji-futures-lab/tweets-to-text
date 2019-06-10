@@ -38,11 +38,11 @@ class User(TwitterMixin, models.Model):
 
     @property
     def has_pending_compilation(self):
-        return self.compilations.pending.exists()
+        return self.compilations.pending().exists()
 
     @property
     def pending_compilation(self):
-        return self.compilations.pending.latest('requested_at')
+        return self.compilations.pending().latest('requested_at')
 
     def send_dm(self, message_text):
         """Send a direct message to follower containing message_text."""
@@ -177,9 +177,13 @@ class AccountActivity(models.Model):
         try:
             self._tweet_create_events
         except AttributeError:
-            self._tweet_create_events = self.get_events_by_type(
-                'tweet_create_events'
-            )
+            try:
+                self._tweet_create_events = [
+                    Tweet(**e) for e in
+                    self.json_data['tweet_create_events']
+                ]
+            except KeyError:
+                self._tweet_create_events = []
 
         return self._tweet_create_events
 
@@ -196,7 +200,7 @@ class AccountActivity(models.Model):
 class TweetTextCompilationManager(models.Manager):
 
     def pending(self):
-        qs = self.get_queryset.filter(
+        qs = self.get_queryset().filter(
             init_tweet_deleted=False, completed_at__isnull=True
         )
 
@@ -212,6 +216,7 @@ class TweetTextCompilation(TwitterMixin, models.Model):
     user = models.ForeignKey(
         'User',
         on_delete=models.PROTECT,
+        related_name='compilations',
     )
     init_tweet_json = JSONField()
     final_tweet_json = JSONField(
@@ -228,6 +233,7 @@ class TweetTextCompilation(TwitterMixin, models.Model):
     )
     tweets = ArrayField(
         JSONField(),
+        default=list,
     )
     text = models.TextField(
         blank=True,
@@ -238,7 +244,7 @@ class TweetTextCompilation(TwitterMixin, models.Model):
 
         self.init_tweet_json['full_text'] = self.init_tweet_json['text']
 
-        self.append(self.init_tweet_json)
+        self.tweets.append(self.init_tweet_json)
 
         sorted_tweets = sorted(self.tweets, key=lambda k: k['id'])
 
@@ -250,6 +256,10 @@ class TweetTextCompilation(TwitterMixin, models.Model):
         self.completed_at = timezone.now()
 
         return self.save()
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('tweets2text:compilation', args=[str(self.id)])
 
     def get_tweets(self):
         params = dict(
@@ -280,10 +290,14 @@ class TweetTextCompilation(TwitterMixin, models.Model):
         return tweets
 
     def refresh_init_tweet(self):
+        response = self.init_tweet.get_from_twitter()
+        
         try:
-            self.init_tweet_json = self.init_tweet.get_from_twitter()
+            response.response.raise_for_status()
         except HTTPError:
             self.init_tweet_deleted = True
+        else:
+            self.init_tweet_json = response.json()
 
         return self.save()
 
@@ -296,7 +310,7 @@ class TweetTextCompilation(TwitterMixin, models.Model):
         )
         params = dict(
             status=status,
-            in_reply_to_status_id=self.init_tweet_id,
+            in_reply_to_status_id=self.init_tweet.id_str,
         )
 
         return self.twitter_api.request('statuses/update', params)
@@ -307,7 +321,11 @@ class TweetTextCompilation(TwitterMixin, models.Model):
 
     @property
     def final_tweet(self):
-        return Tweet(**self.final_tweet_json)
+        try:
+            tweet = Tweet(**self.final_tweet_json)
+        except TypeError:
+            tweet = None
+        return tweet
 
     objects = TweetTextCompilationManager()
 

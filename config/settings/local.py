@@ -30,7 +30,7 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'INFO',
         },
-        'rmp.management': {
+        'tweets2text.management': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,

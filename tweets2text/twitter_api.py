@@ -35,21 +35,17 @@ class TwitterObject(TwitterMixin):
 class Tweet(TwitterObject):
     resource = 'statuses'
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.user = TwitterUser(**self.user)
-
     @property
     def user_obj(self):
-        return self._user_obj
+        return TwitterUser(**self.user)
 
     @property
     def is_actionable_mention(self):
-        if self.user.is_follower:
+        if self.user_obj.is_follower:
             if self.is_reply:
                 if (
                     self.is_self_reply and
-                    self.user.as_tweets2text_user.has_pending_compilations
+                    self.user_obj.as_tweets2text_user.has_pending_compilation
                 ):
                     is_actionable = True
                 else:
@@ -80,7 +76,7 @@ class Tweet(TwitterObject):
 
     @property
     def is_self_reply(self):
-        self._is_self_reply = self.in_reply_to_user_id == self.user['id_str']
+        self._is_self_reply = self.in_reply_to_user_id_str == self.user_obj.id_str
         return self._is_self_reply
 
 
@@ -90,16 +86,14 @@ class TwitterUser(TwitterObject):
     @property
     def is_follower(self):
         try:
-            self._follower
+            self._is_follower
         except AttributeError:
-            connections = self.get_connections_with_user(
-                settings.BOT_ACCOUNT_ID_STR
-            )
-            self._follower = 'following' in connections
+            connections = self.get_connections_with_bot()
+            self._is_follower = 'followed_by' in connections
 
-        return self._follower
+        return self._is_follower
 
-    def get_connections_with_user(self):
+    def get_connections_with_bot(self):
         params = dict(user_id=self.id_str)
         response = self.twitter_api.request(
             'friendships/lookup', params
@@ -110,5 +104,5 @@ class TwitterUser(TwitterObject):
 
     @property
     def as_tweets2text_user(self):
-        m = apps.get_app_config('admin').get_model('User')
+        m = apps.get_app_config('tweets2text').get_model('User')
         return m.objects.get(id_str=self.id_str)

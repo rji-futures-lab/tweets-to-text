@@ -1,4 +1,4 @@
-# noqa E501
+# flake8: noqa: E501
 
 instructions = (
     "Thanks for the follow! I'm here whenever you need me."

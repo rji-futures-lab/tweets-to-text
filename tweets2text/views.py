@@ -66,9 +66,11 @@ class TwitterWebhook(View):
 
 def plain_text_view(request, compilation_id):
     try:
-        compilation = TweetsToTextCompilation.objects.get(id=compilation_id)
-    except TweetsToTextCompilation.DoesNotExist:
-        raise Http404("Poll does not exist")
+        compilation = TweetTextCompilation.objects.filter(
+            completed_at__isnull=False
+        ).get(id=compilation_id)
+    except TweetTextCompilation.DoesNotExist:
+        raise Http404("Compilation does not exist")
 
     response = HttpResponse(
         compilation.text,
