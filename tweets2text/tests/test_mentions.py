@@ -3,7 +3,9 @@ from requests_mock import Mocker
 from django.test import TestCase
 from tweets2text import fixtures
 from tweets2text.models import TweetTextCompilation, User
-from .base import AccountActivityTestBase, CreateTweetBaseTest, ThreadedTweetBaseTest
+from .base import (
+    AccountActivityTestBase, CreateTweetBaseTest, ThreadedTweetBaseTest
+)
 
 
 class MentionByNonfollowerTestCase(CreateTweetBaseTest, TestCase):
@@ -267,7 +269,7 @@ class DeletedInitMentionTestCase(AccountActivityTestBase, TestCase):
     def setUp(self, m):
 
         friendship_lookup_url_pattern = re.compile(
-            r'https\://api\.twitter\.com/1\.1/friendships/lookup\.json\?user_id\=\d+'
+            r'https\://api\.twitter\.com/1\.1/friendships/lookup\.json\?user_id\=\d+' # noqa
         )
         self.mock_friendship_lookup_endpoint = m.register_uri(
             'GET',
@@ -276,7 +278,7 @@ class DeletedInitMentionTestCase(AccountActivityTestBase, TestCase):
         )
 
         self.mock_dm_endpoint = m.register_uri(
-            'POST', 
+            'POST',
             'https://api.twitter.com/1.1/direct_messages/events/new.json',
             json=dict()
         )
@@ -285,35 +287,36 @@ class DeletedInitMentionTestCase(AccountActivityTestBase, TestCase):
             r'https\://api\.twitter\.com/1\.1/statuses/show\/\d+\.json'
         )
         self.mock_statuses_show_endpoint = m.register_uri(
-            'GET', 
+            'GET',
             statuses_show_url_pattern,
             json=dict(),
             status_code=404,
         )
 
         self.mock_statuses_update_endpoint = m.register_uri(
-            'POST', 
+            'POST',
             'https://api.twitter.com/1.1/statuses/update.json',
             json=dict()
         )
 
         self.mock_typing_indicator_endpoint = m.register_uri(
-            'POST', 
+            'POST',
             'https://api.twitter.com/1.1/direct_messages/indicate_typing.json',
             json=dict()
         )
 
         self.mock_user_timeline_endpoint = m.register_uri(
-            'GET', 
+            'GET',
             'https://api.twitter.com/1.1/statuses/user_timeline.json',
             json=fixtures.tweets
         )
 
         super(DeletedInitMentionTestCase, self).setUp()
 
-
     def test_deleted_compilation_count(self):
-        count = TweetTextCompilation.objects.filter(init_tweet_deleted=True).count()
+        count = TweetTextCompilation.objects.filter(
+            init_tweet_deleted=True
+        ).count()
         self.assertEqual(1, count)
 
     def test_pending_compilation_count(self):
@@ -441,7 +444,7 @@ class SelfReplyNoPendingCompilationTestCase(ThreadedTweetBaseTest, TestCase):
     def setUpTestData(self):
         user_data = fixtures.user.copy()
         user_data['json_data'] = fixtures.user
-        user = User.objects.create(**user_data)
+        User.objects.create(**user_data)
 
     def test_compilation_count(self):
         count = TweetTextCompilation.objects.count()

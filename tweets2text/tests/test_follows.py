@@ -83,9 +83,11 @@ class RefollowTestCase(FollowTestBase, TestCase):
     def setUpTestData(cls):
         user_data = fixtures.user.copy()
         user_data['json_data'] = fixtures.user
-        user_data['last_follow_at'] = timezone.datetime(1980, 11, 13)
-        cls.user = User.objects.create(**user_data)
-        cls.user.follow_history.create(event_json=fixtures.follow_event)
+        user_data['last_follow_at'] = timezone.datetime(
+            1980, 11, 13, tzinfo=timezone.utc
+        )
+        user = User.objects.create(**user_data)
+        user.follow_history.create(event_json=fixtures.follow_event)
 
     def test_dm_call_count(self):
         self.assertEqual(
@@ -98,16 +100,18 @@ class RefollowTestCase(FollowTestBase, TestCase):
         )
 
     def test_follow_history_count(self):
-        count = self.user.follow_history.filter(
+        user = User.objects.all()[0]
+        count = user.follow_history.filter(
             event_json__type='follow'
         ).count()
 
         self.assertEqual(2, count)
 
     def test_last_follow_at(self):
+        user = User.objects.all()[0]
         self.assertEqual(
-            self.user.last_follow_at.year,
-            timezone.now().year
+            timezone.now().year,
+            user.last_follow_at.year,
         )
 
 

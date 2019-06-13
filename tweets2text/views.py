@@ -48,7 +48,6 @@ class TwitterWebhook(View):
 
         Twitter makes POST method calls to this route.
         """
-        # import ipdb; ipdb.set_trace()
         aa_obj = AccountActivity.objects.create(
             json_data=json.loads(request.body),
         )

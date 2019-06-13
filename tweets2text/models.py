@@ -10,7 +10,7 @@ from requests.exceptions import HTTPError
 from TwitterAPI import TwitterPager
 import constants
 from tweets2text.twitter_api import (
-    Tweet, TwitterMixin, TwitterObject
+    Tweet, TwitterMixin, TwitterObject, TwitterUser
 )
 
 
@@ -33,7 +33,7 @@ class User(TwitterMixin, models.Model):
     )
     json_data = JSONField()
     last_follow_at = models.DateTimeField(
-        auto_now_add=True,
+        default=timezone.now,
     )
 
     @property
@@ -117,7 +117,7 @@ class AccountActivity(models.Model):
         editable=False,
     )
     received_at = models.DateTimeField(
-        auto_now_add=True,
+        default=timezone.now,
     )
     processing_started_at = models.DateTimeField(null=True)
     processing_completed_at = models.DateTimeField(null=True)
@@ -149,11 +149,12 @@ class AccountActivity(models.Model):
         try:
             self._follow_events
         except AttributeError:
+            bot_id = self.json_data['for_user_id']
             self._follow_events = [
                 f for f in self.get_events_by_type('follow_events')
                 if f.type == 'follow' and
-                f.target['id_str'] == self.json_data['for_user_id'] and
-                f.source['id_str'] != self.json_data['for_user_id']
+                TwitterUser(**f.target).id_str == bot_id and
+                TwitterUser(**f.source).id_str != bot_id
             ]
 
         return self._follow_events
@@ -163,11 +164,12 @@ class AccountActivity(models.Model):
         try:
             self._unfollow_events
         except AttributeError:
+            bot_id = self.json_data['for_user_id']
             self._unfollow_events = [
                 f for f in self.get_events_by_type('unfollow_events')
                 if f.type == 'unfollow' and
-                f.target['id_str'] == self.json_data['for_user_id'] and
-                f.source['id_str'] != self.json_data['for_user_id']
+                TwitterUser(**f.target).id_str == bot_id and
+                TwitterUser(**f.source).id_str != bot_id
             ]
 
         return self._unfollow_events
@@ -291,7 +293,7 @@ class TweetTextCompilation(TwitterMixin, models.Model):
 
     def refresh_init_tweet(self):
         response = self.init_tweet.get_from_twitter()
-        
+
         try:
             response.response.raise_for_status()
         except HTTPError:

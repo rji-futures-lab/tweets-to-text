@@ -1,5 +1,5 @@
 """
-WSGI config for factchecker project.
+WSGI config for tweets-to-text project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 """

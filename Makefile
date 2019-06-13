@@ -38,9 +38,9 @@ recreaterds:
 
 
 deploy:
-	zappa deploy dev
+	zappa deploy prod
 
-	zappa certify dev
+	zappa certify prod
 
 	python manage.py collectstatic --noinput \
 	--settings "config.settings.prod"

@@ -23,6 +23,9 @@ class TwitterMixin(object):
 class TwitterObject(TwitterMixin):
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
+        # add id_str if missing (an issue with legacy data?)
+        if hasattr(self, 'id') and not hasattr(self, 'id_str'):
+            self.id_str = getattr(self, 'id_str', str(self.id))
 
     def get_from_twitter(self):
         resource_url = '{0}/show/:{1}'.format(
@@ -76,8 +79,8 @@ class Tweet(TwitterObject):
 
     @property
     def is_self_reply(self):
-        self._is_self_reply = self.in_reply_to_user_id_str == self.user_obj.id_str
-        return self._is_self_reply
+        test = self.in_reply_to_user_id_str == self.user_obj.id_str
+        return test
 
 
 class TwitterUser(TwitterObject):

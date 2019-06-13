@@ -411,7 +411,9 @@ account_activity_w_threaded_final_mention = dict(
 
 tweets = [tweet1, tweet2, tweet3, final_mention]
 
-threaded_tweets = [thread_tweet1, thread_tweet2, thread_tweet3, thread_final_mention]
+threaded_tweets = [
+    thread_tweet1, thread_tweet2, thread_tweet3, thread_final_mention
+]
 
 formatted_text = """Going live
 

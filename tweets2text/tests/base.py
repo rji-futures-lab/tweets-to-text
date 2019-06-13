@@ -39,12 +39,12 @@ class FollowTestBase(AccountActivityTestBase):
     def setUp(self, m):
 
         self.mock_dm_endpoint = m.register_uri(
-            'POST', 
+            'POST',
             'https://api.twitter.com/1.1/direct_messages/events/new.json',
             json=dict()
         )
         self.mock_typing_indicator_endpoint = m.register_uri(
-            'POST', 
+            'POST',
             'https://api.twitter.com/1.1/direct_messages/indicate_typing.json',
             json=dict()
         )
@@ -61,7 +61,7 @@ class CreateTweetBaseTest(AccountActivityTestBase):
     def setUp(self, m):
 
         friendship_lookup_url_pattern = re.compile(
-            r'https\://api\.twitter\.com/1\.1/friendships/lookup\.json\?user_id\=\d+'
+            r'https\://api\.twitter\.com/1\.1/friendships/lookup\.json\?user_id\=\d+' # noqa
         )
         self.mock_friendship_lookup_endpoint = m.register_uri(
             'GET',
@@ -70,7 +70,7 @@ class CreateTweetBaseTest(AccountActivityTestBase):
         )
 
         self.mock_dm_endpoint = m.register_uri(
-            'POST', 
+            'POST',
             'https://api.twitter.com/1.1/direct_messages/events/new.json',
             json=dict()
         )
@@ -79,25 +79,25 @@ class CreateTweetBaseTest(AccountActivityTestBase):
             r'https\://api\.twitter\.com/1\.1/statuses/show\/\d+\.json'
         )
         self.mock_statuses_show_endpoint = m.register_uri(
-            'GET', 
+            'GET',
             statuses_show_url_pattern,
             json=fixtures.init_mention,
         )
 
         self.mock_statuses_update_endpoint = m.register_uri(
-            'POST', 
+            'POST',
             'https://api.twitter.com/1.1/statuses/update.json',
             json=dict()
         )
 
         self.mock_typing_indicator_endpoint = m.register_uri(
-            'POST', 
+            'POST',
             'https://api.twitter.com/1.1/direct_messages/indicate_typing.json',
             json=dict()
         )
 
         self.mock_user_timeline_endpoint = m.register_uri(
-            'GET', 
+            'GET',
             'https://api.twitter.com/1.1/statuses/user_timeline.json',
             json=fixtures.tweets
         )
@@ -115,7 +115,7 @@ class ThreadedTweetBaseTest(AccountActivityTestBase):
     def setUp(self, m):
 
         friendship_lookup_url_pattern = re.compile(
-            r'https\://api\.twitter\.com/1\.1/friendships/lookup\.json\?user_id\=\d+'
+            r'https\://api\.twitter\.com/1\.1/friendships/lookup\.json\?user_id\=\d+' # noqa
         )
         self.mock_friendship_lookup_endpoint = m.register_uri(
             'GET',
@@ -124,7 +124,7 @@ class ThreadedTweetBaseTest(AccountActivityTestBase):
         )
 
         self.mock_dm_endpoint = m.register_uri(
-            'POST', 
+            'POST',
             'https://api.twitter.com/1.1/direct_messages/events/new.json',
             json=dict()
         )
@@ -133,25 +133,25 @@ class ThreadedTweetBaseTest(AccountActivityTestBase):
             r'https\://api\.twitter\.com/1\.1/statuses/show\/\d+\.json'
         )
         self.mock_statuses_show_endpoint = m.register_uri(
-            'GET', 
+            'GET',
             statuses_show_url_pattern,
             json=fixtures.init_mention,
         )
 
         self.mock_statuses_update_endpoint = m.register_uri(
-            'POST', 
+            'POST',
             'https://api.twitter.com/1.1/statuses/update.json',
             json=dict()
         )
 
         self.mock_typing_indicator_endpoint = m.register_uri(
-            'POST', 
+            'POST',
             'https://api.twitter.com/1.1/direct_messages/indicate_typing.json',
             json=dict()
         )
 
         self.mock_user_timeline_endpoint = m.register_uri(
-            'GET', 
+            'GET',
             'https://api.twitter.com/1.1/statuses/user_timeline.json',
             json=fixtures.threaded_tweets
         )
