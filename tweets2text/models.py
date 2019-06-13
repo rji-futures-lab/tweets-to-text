@@ -258,7 +258,7 @@ class TweetTextCompilation(TwitterMixin, models.Model):
         editable=False,
     )
     requested_at = models.DateTimeField(
-        auto_now_add=True,
+        default=timezone.now,
         editable=False,
     )
     completed_at = models.DateTimeField(

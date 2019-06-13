@@ -139,8 +139,14 @@ class Command(BaseCommand):
                 pending_compilation.save()
                 pending_compilation.complete()
             else:
+                created_at_dt = timezone.datetime.strptime(
+                    tweet.created_at, "%a %b %d %H:%M:%S %z %Y"
+                ).replace(tzinfo=timezone.utc)
+
                 TweetTextCompilation.objects.create(
-                    user=user, init_tweet_json=tweet.__dict__
+                    user=user,
+                    init_tweet_json=tweet.__dict__,
+                    requested_at=created_at_dt,
                 )
 
         account_activity.processing_completed_at = timezone.now()
