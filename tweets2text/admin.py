@@ -107,8 +107,9 @@ class AccountActivityAdmin(admin.ModelAdmin):
 class TweetTextCompilationAdmin(admin.ModelAdmin):
     date_hierarchy = 'requested_at'
     list_display = (
-        'id', 'user', 'requested_at', 'completed_at',
+        'id', 'user', 'requested_at', 'completed_at', 'init_tweet_deleted'
     )
+    list_filter = ('init_tweet_deleted',)
     readonly_fields = list_display + (
         'pretty_init_tweet_json', 'pretty_final_tweet_json', 'text'
     )
