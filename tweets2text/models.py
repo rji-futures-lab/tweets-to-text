@@ -1,7 +1,7 @@
 import json
 import random
-import uuid
 from time import sleep
+import uuid
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField, JSONField
 from django.db import models
@@ -17,23 +17,29 @@ from tweets2text.twitter_api import (
 class User(TwitterMixin, models.Model):
     id = models.BigIntegerField(
         primary_key=True,
+        editable=False,
     )
     id_str = models.CharField(
         max_length=200,
+        editable=False,
     )
     name = models.CharField(
         max_length=200,
+        editable=False,
     )
     screen_name = models.CharField(
         max_length=20,
+        editable=False,
     )
     location = models.CharField(
         max_length=200,
         blank=True,
+        editable=False,
     )
-    json_data = JSONField()
+    json_data = JSONField(editable=False)
     last_follow_at = models.DateTimeField(
         default=timezone.now,
+        editable=False,
     )
 
     @property
@@ -80,7 +86,12 @@ class User(TwitterMixin, models.Model):
 
         return sent_indicator
 
+    def __str__(self):
+        return '@%s' % self.screen_name
+
     class Meta:
+        verbose_name = 'TweetsToText User'
+        verbose_name_plural = 'TweetsToText Users'
         indexes = [
             models.Index(
                 fields=['id_str', ],
@@ -98,8 +109,9 @@ class FollowHistory(models.Model):
         'User',
         on_delete=models.PROTECT,
         related_name='follow_history',
+        editable=False,
     )
-    event_json = JSONField()
+    event_json = JSONField(editable=False,)
 
     @property
     def type(self):
@@ -107,7 +119,17 @@ class FollowHistory(models.Model):
 
     @property
     def created_timestamp(self):
-        return self.event_json['created_timestamp']
+        return int(self.event_json['created_timestamp'])
+
+    @property
+    def created_datetime(self):
+        self._created_datetime = timezone.datetime.fromtimestamp(
+            self.created_timestamp/1000.0, tz=timezone.utc
+        )
+        return self._created_datetime
+
+    def __str__(self):
+        return '{0} on {1}'.format(self.event_json['type'], self.created_datetime)
 
 
 class AccountActivity(models.Model):
@@ -118,10 +140,11 @@ class AccountActivity(models.Model):
     )
     received_at = models.DateTimeField(
         default=timezone.now,
+        editable=False,
     )
-    processing_started_at = models.DateTimeField(null=True)
-    processing_completed_at = models.DateTimeField(null=True)
-    json_data = JSONField()
+    processing_started_at = models.DateTimeField(null=True, editable=False,)
+    processing_completed_at = models.DateTimeField(null=True, editable=False,)
+    json_data = JSONField(editable=False,)
 
     def get_events_by_type(self, message_type):
         try:
@@ -189,8 +212,12 @@ class AccountActivity(models.Model):
 
         return self._tweet_create_events
 
+    def __str__(self):
+        return 'on {0}'.format(self.received_at)
+
     class Meta:
         verbose_name = 'Account Activity'
+        verbose_name_plural = 'Account Activity'
         indexes = [
             models.Index(
                 fields=['received_at', ],
@@ -219,26 +246,33 @@ class TweetTextCompilation(TwitterMixin, models.Model):
         'User',
         on_delete=models.PROTECT,
         related_name='compilations',
+        editable=False,
     )
-    init_tweet_json = JSONField()
+    init_tweet_json = JSONField(editable=False,)
     final_tweet_json = JSONField(
         null=True,
+        editable=False,
     )
     init_tweet_deleted = models.BooleanField(
         default=False,
+        editable=False,
     )
     requested_at = models.DateTimeField(
         auto_now_add=True,
+        editable=False,
     )
     completed_at = models.DateTimeField(
         null=True,
+        editable=False,
     )
     tweets = ArrayField(
         JSONField(),
         default=list,
+        editable=False,
     )
     text = models.TextField(
         blank=True,
+        editable=False,
     )
 
     def complete(self):
@@ -328,6 +362,9 @@ class TweetTextCompilation(TwitterMixin, models.Model):
         except TypeError:
             tweet = None
         return tweet
+
+    def __str__(self):
+        return 'from {0} (on {1})'.format(self.user.screen_name, self.requested_at)
 
     objects = TweetTextCompilationManager()
 

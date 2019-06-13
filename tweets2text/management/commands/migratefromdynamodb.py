@@ -103,9 +103,12 @@ class Command(BaseCommand):
                     screen_name=follow.source['screen_name'],
                     location=follow.source['location'],
                     json_data=follow.source,
+                    last_follow_at=self.timestamp_to_tz_aware(
+                        follow.created_timestamp
+                    ),
                 )
             else:
-                user.last_follow_at = timezone.now()
+                user.last_follow_at = self.timestamp_to_tz_aware(follow.created_timestamp)
                 user.save()
 
             user.follow_history.create(event_json=follow.__dict__)
@@ -164,4 +167,8 @@ class Command(BaseCommand):
         dt = timezone.datetime.strptime(
             dt_str, "%Y-%m-%dT%H:%M:%S.%f"
         ).replace(tzinfo=timezone.utc)
+        return dt
+
+    def timestamp_to_tz_aware(self, timestamp):
+        dt = timezone.datetime.fromtimestamp(int(timestamp)/1000.0, tz=timezone.utc)
         return dt
