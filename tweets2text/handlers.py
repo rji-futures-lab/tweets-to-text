@@ -5,7 +5,7 @@ from tweets2text.models import (
 )
 
 
-@task(capture_response=True)
+@task()
 def handle_account_activity(account_activity_id):
 
     activity = AccountActivity.objects.get(id=account_activity_id)
