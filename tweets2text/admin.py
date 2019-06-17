@@ -3,7 +3,9 @@ from pygments import highlight
 from pygments.lexers import JsonLexer
 from pygments.formatters import HtmlFormatter
 from django.contrib import admin
-from django.db.models import Func, Count, Q, IntegerField
+from django.db.models import (
+    Case, CharField, Count, Func, IntegerField, Q, Value, When
+)
 from django.contrib.postgres.fields import JSONField
 from django.utils.safestring import mark_safe
 from .models import (
@@ -103,17 +105,75 @@ class AccountActivityAdmin(admin.ModelAdmin):
         return False
 
 
+class StatusChoiceFilter(admin.SimpleListFilter):
+    title = ('Status')
+
+    parameter_name = 'status'
+
+    def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples. The first element in each
+        tuple is the coded value for the option that will
+        appear in the URL query. The second element is the
+        human-readable name for the option that will appear
+        in the right sidebar.
+        """
+        return (
+            ('co', ('Completed')),
+            ('ca', ('Cancelled')),
+            ('pe', ('Pending')),
+        )
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        if self.value() == 'co':
+            return queryset.filter(status='co')
+        if self.value() == 'ca':
+            return queryset.filter(status='ca')
+        if self.value() == 'pe':
+            return queryset.filter(status='pe')
+
+
 @admin.register(TweetTextCompilation)
 class TweetTextCompilationAdmin(admin.ModelAdmin):
     date_hierarchy = 'requested_at'
     list_display = (
-        'id', 'user', 'requested_at', 'completed_at', 'init_tweet_deleted'
+        'id', 'user', 'requested_at', 'completed_at', 'status'
     )
-    list_filter = ('init_tweet_deleted',)
+    list_filter = (
+        'init_tweet_deleted', StatusChoiceFilter,
+    )
     readonly_fields = list_display + (
         'pretty_init_tweet_json', 'pretty_final_tweet_json', 'text'
     )
     search_fields = ['id', 'user__screen_name', 'user__name', 'user__location']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+
+        return qs.annotate(
+            status=Case(
+                When(completed_at__isnull=False,then=Value('co')),
+                When(init_tweet_deleted=True,then=Value('ca')),
+                default=Value('pe'),
+                output_field=CharField(),
+            )
+        ).order_by('-requested_at')
+
+    def status(self, obj):
+        if obj.status == 'co':
+            return 'Completed'
+        if obj.status == 'ca':
+            return 'Cancelled'
+        if obj.status == 'pe':
+            return 'Pending'
+
+    status.admin_order_field = 'status'
+
 
     def pretty_init_tweet_json(self, instance):
         """Function to display pretty version of our data"""
