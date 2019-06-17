@@ -4,6 +4,8 @@ import hmac
 import json
 from django.conf import settings
 from django.http import HttpResponse, Http404, JsonResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView, View
 from tweets2text.handlers import handle_account_activity
 from tweets2text.models import (
@@ -15,6 +17,7 @@ class Homepage(TemplateView):
     template_name = "tweets2text/homepage.html"
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class TwitterWebhook(View):
 
     def get(self, request):
@@ -28,7 +31,7 @@ class TwitterWebhook(View):
 
         Return JSON that includes the response_token.
         """
-        crc = request.args['crc_token']
+        crc = request.GET.get('crc_token')
 
         validation = hmac.new(
             key=bytes(settings.TWITTER_CONSUMER_SECRET, 'utf-8'),
@@ -52,7 +55,7 @@ class TwitterWebhook(View):
             json_data=json.loads(request.body),
         )
 
-        handle_account_activity(aa_obj.id)
+        handle_account_activity(str(aa_obj.id))
 
         resp_data = dict(
             direct_message_events=len(aa_obj.direct_message_events),
