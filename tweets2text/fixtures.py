@@ -345,6 +345,34 @@ thread_final_mention = dict(
     timestamp_ms="1537024212188",
 )
 
+self_reply_to_init_mention = dict(
+    created_at="Sat Sep 15 15:10:12 +0000 2018",
+    id=1040981111734775812,
+    id_str="1040981111734775812",
+    full_text="This bot was made in the RJI Futures Lab. @TweetsToText",
+    in_reply_to_status_id=init_mention['id'],
+    in_reply_to_status_id_str=init_mention['id_str'],
+    in_reply_to_user_id=user['id'],
+    in_reply_to_user_id_str=user['id_str'],
+    in_reply_to_screen_name='Bot2BotAction',
+    user=user,
+    is_quote_status=False,
+    entities=dict(
+        hashtags=[],
+        urls=[],
+        user_mentions=[
+            dict(
+                screen_name="TweetsToText",
+                name="TweetsToText",
+                id=bot['id'],
+                id_str=bot['id_str'],
+                indices=[2, 15]
+            )
+        ],
+        symbols=[]
+    ),
+    timestamp_ms="1537024212188",
+)
 
 account_activity_w_follow_event = dict(
     for_user_id=settings.BOT_ACCOUNT_ID_STR,
@@ -407,6 +435,13 @@ account_activity_w_threaded_final_mention = dict(
     follow_events=[],
     unfollow_events=[],
     tweet_create_events=[thread_final_mention],
+)
+
+account_activity_w_self_reply_to_init_mention = dict(
+    for_user_id=settings.BOT_ACCOUNT_ID_STR,
+    follow_events=[],
+    unfollow_events=[],
+    tweet_create_events=[self_reply_to_init_mention],
 )
 
 tweets = [tweet1, tweet2, tweet3, final_mention]

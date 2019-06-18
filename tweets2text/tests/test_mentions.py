@@ -469,3 +469,48 @@ class SelfReplyNoPendingCompilationTestCase(ThreadedTweetBaseTest, TestCase):
         self.assertEqual(
             0, self.mock_dm_endpoint.call_count,
         )
+
+
+class SelfReplyToInitMentionTestCase(ThreadedTweetBaseTest, TestCase):
+    """Test case for self-reply to init mention of pending compilation."""
+
+    account_activity = fixtures.account_activity_w_self_reply_to_init_mention
+
+    @classmethod
+    def setUpTestData(self):
+        user_data = fixtures.user.copy()
+        user_data['json_data'] = fixtures.user
+        user = User.objects.create(**user_data)
+        user.compilations.create(init_tweet_json=fixtures.init_mention)
+
+    def test_compilation_count(self):
+        count = TweetTextCompilation.objects.count()
+        self.assertEqual(1, count)
+
+    def test_pending_compilation_count(self):
+        count = TweetTextCompilation.objects.pending().count()
+        self.assertEqual(1, count)
+
+    def test_completed_compilation_count(self):
+        count = TweetTextCompilation.objects.completed().count()
+        self.assertEqual(0, count)
+
+    def test_friendship_lookup_call_count(self):
+        self.assertEqual(
+            1, self.mock_friendship_lookup_endpoint.call_count
+        )
+
+    def test_statuses_update_call_count(self):
+        self.assertEqual(
+            0, self.mock_statuses_update_endpoint.call_count,
+        )
+
+    def test_typing_indicator_call_count(self):
+        self.assertEqual(
+            0, self.mock_dm_endpoint.call_count,
+        )
+
+    def test_dm_call_count(self):
+        self.assertEqual(
+            0, self.mock_dm_endpoint.call_count,
+        )

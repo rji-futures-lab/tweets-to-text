@@ -50,7 +50,12 @@ class Tweet(TwitterObject):
                     self.is_self_reply and
                     self.user_obj.as_tweets2text_user.has_pending_compilation
                 ):
-                    is_actionable = True
+                    user = self.user_obj.as_tweets2text_user 
+                    init_tweet = user.pending_compilation.init_tweet
+                    if init_tweet.id == self.in_reply_to_status_id:
+                        is_actionable = False
+                    else:
+                        is_actionable = True
                 else:
                     is_actionable = False
             elif self.is_quote_status or self.is_retweet:
