@@ -4,13 +4,19 @@ from django.utils import timezone
 from tweets2text.models import (
     AccountActivity, FollowHistory, TweetTextCompilation, User
 )
+from zappa.asynchronous import task
 from tweets2text.twitter_api import TwitterUser
 
 
+@task()
 def handle_account_activity(account_activity_id):
 
     activity = AccountActivity.objects.get(id=account_activity_id)
-    activity.processing_started_at = timezone.now()
+    if activity.processing_started_at:
+        return
+    else:
+        activity.processing_started_at = timezone.now()
+        activity.save()
 
     for follow in activity.follow_events:
         follower = TwitterUser(**follow.source)
