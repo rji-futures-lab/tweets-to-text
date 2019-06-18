@@ -1,11 +1,10 @@
+from django.db import IntegrityError
 from django.utils import timezone
-from zappa.async import task
 from tweets2text.models import (
     AccountActivity, TweetTextCompilation, User
 )
 
 
-@task()
 def handle_account_activity(account_activity_id):
 
     activity = AccountActivity.objects.get(id=account_activity_id)
