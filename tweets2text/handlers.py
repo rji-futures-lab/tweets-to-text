@@ -1,3 +1,4 @@
+from django.contrib.sites.models import Site
 from django.db import IntegrityError
 from django.utils import timezone
 from tweets2text.models import (
@@ -55,7 +56,11 @@ def handle_account_activity(account_activity_id):
                 pending_compilation.final_tweet_json = tweet.__dict__
                 pending_compilation.save()
                 pending_compilation.complete()
-                url = pending_compilation.get_absolute_url()
+
+                url = 'https://%s%s' % (
+                    Site.objects.get_current().domain,
+                    pending_compilation.get_absolute_url()
+                )
                 user.send_dm(url)
 
             else:
