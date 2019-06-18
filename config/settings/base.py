@@ -15,9 +15,9 @@ ROOT_DIR = os.path.dirname(
 
 django_env = os.getenv('DJANGO_ENV', 'local')
 
-secrets = configparser.RawConfigParser()
-secrets.read(os.path.join(ROOT_DIR, 'secrets.cfg'))
-secrets = secrets[django_env]
+config = configparser.RawConfigParser()
+config.read(os.path.join(ROOT_DIR, 'secrets.cfg'))
+secrets = config[django_env]
 
 SECRET_KEY = secrets.get('django_secret_key')
 
