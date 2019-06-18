@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 from django.utils import timezone
 from tweets2text.models import (
-    AccountActivity, TweetTextCompilation, User
+    AccountActivity, FollowHistory, TweetTextCompilation, User
 )
 from tweets2text.twitter_api import TwitterUser
 
@@ -34,8 +34,14 @@ def handle_account_activity(account_activity_id):
         user.follow_history.create(event_json=follow.__dict__)
 
     for unfollow in activity.unfollow_events:
-        user = User.objects.get(id=unfollow.source['id'])
-        user.follow_history.create(event_json=unfollow.__dict__)
+        unfollower = TwitterUser(**unfollow.source)
+        try:
+            FollowHistory.objects.create(
+                user_id=unfollower.id,
+                event_json=unfollow.__dict__
+            )
+        except IntegrityError:
+            pass
 
     for tweet in activity.tweet_create_events:
         if tweet.is_actionable_mention:
