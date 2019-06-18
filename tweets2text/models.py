@@ -228,6 +228,11 @@ class AccountActivity(models.Model):
 
 class TweetTextCompilationManager(models.Manager):
 
+    def completed(self):
+        qs = self.get_queryset().filter(completed_at__isnull=False)
+
+        return qs
+
     def pending(self):
         qs = self.get_queryset().filter(
             init_tweet_deleted=False, completed_at__isnull=True
