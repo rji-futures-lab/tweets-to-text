@@ -366,7 +366,6 @@ class DeletedInitMentionTestCase(AccountActivityTestBase, TestCase):
 class SelfReplyPendingCompilationTestCase(ThreadedTweetBaseTest, TestCase):
     """Test case for reply by init mention author w/ pending compilation."""
 
-    account_activity = fixtures.account_activity_w_threaded_final_mention
     friendship_lookup_response = [dict(connections=['followed_by'])]
 
     @classmethod
@@ -437,8 +436,6 @@ class SelfReplyPendingCompilationTestCase(ThreadedTweetBaseTest, TestCase):
 
 class SelfReplyNoPendingCompilationTestCase(ThreadedTweetBaseTest, TestCase):
     """Test case for reply by init mention author w/o pending compilation."""
-
-    account_activity = fixtures.account_activity_w_threaded_final_mention
 
     @classmethod
     def setUpTestData(self):
