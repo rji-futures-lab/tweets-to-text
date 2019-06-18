@@ -13,7 +13,7 @@ AWS_ACCESS_KEY_ID = secrets.get('aws_access_key_id')
 AWS_SECRET_ACCESS_KEY = secrets.get('aws_secret_access_key')
 AWS_S3_REGION_NAME = secrets.get('aws_region_name')
 # Not sure why, but this setting is causing timeouts on the lambda.
-# Works locally.
+# Works locally. Probably because of the vpc_config.
 # AWS_AUTO_CREATE_BUCKET = True
 AWS_BUCKET_ACL = 'public-read'
 AWS_DEFAULT_ACL = 'public-read'
