@@ -3,6 +3,7 @@ from django.utils import timezone
 from tweets2text.models import (
     AccountActivity, TweetTextCompilation, User
 )
+from tweets2text.twitter_api import TwitterUser
 
 
 def handle_account_activity(account_activity_id):
@@ -11,15 +12,17 @@ def handle_account_activity(account_activity_id):
     activity.processing_started_at = timezone.now()
 
     for follow in activity.follow_events:
+        follower = TwitterUser(**follow.source)
+
         try:
-            user = User.objects.get(id=follow.source['id'])
+            user = User.objects.get(id=follower.id)
         except User.DoesNotExist:
             user = User.objects.create(
-                id=follow.source['id'],
-                id_str=follow.source['id_str'],
-                name=follow.source['name'],
-                screen_name=follow.source['screen_name'],
-                location=follow.source['location'],
+                id=follower.id,
+                id_str=follower.id_str,
+                name=follower.name,
+                screen_name=follower.screen_name,
+                location=follower.location,
                 json_data=follow.source,
             )
             user.send_welcome_dm()
