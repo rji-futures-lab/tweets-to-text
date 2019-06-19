@@ -303,14 +303,17 @@ class TweetTextCompilation(TwitterMixin, models.Model):
         return reverse('tweets2text:compilation', args=[str(self.id)])
 
     def get_tweets(self):
+
         params = dict(
             user_id=self.user.id_str,
             since_id=self.init_tweet.id_str,
-            max_id=self.final_tweet.id_str,
             count=200,
             include_rts=True,
             tweet_mode='extended',
         )
+
+        if self.final_tweet:
+            params['max_id'] = self.final_tweet.id_str
 
         response = self.twitter_api.request(
             'statuses/user_timeline',

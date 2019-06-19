@@ -110,6 +110,26 @@ class TwitterUser(TwitterObject):
 
         return connections
 
+    def get_or_create_tweets2text_user(self):
+        m = apps.get_app_config('tweets2text').get_model('User')
+
+        try: 
+            user = m.objects.get(id_str=self.id_str)
+        except m.DoesNotExist:
+            user = m.objects.create(
+                id=self.id,
+                id_str=self.id_str,
+                name=self.name,
+                screen_name=self.screen_name,
+                location=self.location,
+                json_data=self.__dict__,
+            )
+            created = True
+        else:
+            created = False
+
+        return user, created
+
     @property
     def as_tweets2text_user(self):
         m = apps.get_app_config('tweets2text').get_model('User')

@@ -1,3 +1,4 @@
+import re
 from django.contrib.sites.models import Site
 from django.db import IntegrityError
 from django.utils import timezone
@@ -6,6 +7,7 @@ from tweets2text.models import (
 )
 from zappa.asynchronous import task
 from tweets2text.twitter_api import TwitterUser
+from tweets2text import constants
 
 
 @task()
@@ -21,24 +23,16 @@ def handle_account_activity(account_activity_id):
     for follow in activity.follow_events:
         follower = TwitterUser(**follow.source)
 
-        try:
-            user = User.objects.get(id=follower.id)
-        except User.DoesNotExist:
-            user = User.objects.create(
-                id=follower.id,
-                id_str=follower.id_str,
-                name=follower.name,
-                screen_name=follower.screen_name,
-                location=follower.location,
-                json_data=follow.source,
-            )
+        user, created = follower.get_or_create_tweets2text_user()
+
+        if created:
             user.send_welcome_dm()
         else:
             user.last_follow_at = timezone.now()
             user.save()
             user.send_dm('Welcome back!')
 
-        user.follow_history.create(event_json=follow.__dict__)
+        user.follow_history.create(event_json=follow.__dict__)        
 
     for unfollow in activity.unfollow_events:
         unfollower = TwitterUser(**unfollow.source)
@@ -74,6 +68,32 @@ def handle_account_activity(account_activity_id):
                     user=user, init_tweet_json=tweet.__dict__
                 )
                 new_compilation.reply_to_init_tweet()
+
+    for dm in activity.direct_message_events:       
+        if dm.type == 'message_create':
+            try:
+                url = dm.message_create['message_data']["urls"][0]["expanded_url"]
+            except (KeyError, IndexError):
+                pass
+            else:
+                # re pattern match
+                match = constants.tweet_url_regex.match(url)
+                if match:
+                    response = Tweet(id=tweet_id).get_from_twitter()
+                    if response.response.ok:
+                        init_tweet = response.json()
+                        sender = TwitterUser(**init_tweet['user'])
+                        if sender.is_follower:
+                            user = sender.get_or_create_tweets2text_user()
+                            compilation = user.compilations.create(
+                                init_tweet_json=init_tweet
+                            )
+                            compilations.complete()
+                            url = 'https://%s%s' % (
+                                Site.objects.get_current().domain,
+                                pending_compilation.get_absolute_url()
+                            )
+                            user.send_dm(url)
 
     activity.processing_completed_at = timezone.now()
 
