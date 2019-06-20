@@ -81,7 +81,7 @@ class CreateTweetBaseTest(AccountActivityTestBase):
         self.mock_statuses_show_endpoint = m.register_uri(
             'GET',
             statuses_show_url_pattern,
-            json=fixtures.init_mention,
+            json=fixtures.init_mention_w_full_text,
         )
 
         self.mock_statuses_update_endpoint = m.register_uri(
@@ -135,7 +135,7 @@ class ThreadedTweetBaseTest(AccountActivityTestBase):
         self.mock_statuses_show_endpoint = m.register_uri(
             'GET',
             statuses_show_url_pattern,
-            json=fixtures.init_mention,
+            json=fixtures.init_mention_w_full_text,
         )
 
         self.mock_statuses_update_endpoint = m.register_uri(

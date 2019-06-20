@@ -28,11 +28,11 @@ class TwitterObject(TwitterMixin):
             self.id_str = getattr(self, 'id_str', str(self.id))
 
     def get_from_twitter(self):
-        resource_url = '{0}/show/:{1}'.format(
-            self.__class__.resource, self.id_str
-        )
-
         return self.twitter_api.request(resource_url)
+
+    @property
+    def resource_url(self):
+        return '{0}/show/:{1}'.format(self.__class__.resource, self.id_str)
 
 
 class Tweet(TwitterObject):
@@ -87,6 +87,10 @@ class Tweet(TwitterObject):
         test = self.in_reply_to_user_id_str == self.user_obj.id_str
         return test
 
+    def get_from_twitter(self):
+        return self.twitter_api.request(
+            self.resource_url, dict(tweet_mode='extended'),
+        )
 
 class TwitterUser(TwitterObject):
     resource = 'users'

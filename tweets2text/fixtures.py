@@ -73,6 +73,35 @@ init_mention = dict(
     timestamp_ms="1537024212188",
 )
 
+init_mention_w_full_text = dict(
+    created_at="Sat Sep 15 15:10:12 +0000 2018",
+    id=1040981111734775808,
+    id_str="1040981111734775808",
+    full_text="Going live @TweetsToText",
+    in_reply_to_status_id=None,
+    in_reply_to_status_id_str=None,
+    in_reply_to_user_id=None,
+    in_reply_to_user_id_str=None,
+    in_reply_to_screen_name=None,
+    user=user,
+    is_quote_status=False,
+    entities=dict(
+        hashtags=[],
+        urls=[],
+        user_mentions=[
+            dict(
+                screen_name=bot['screen_name'],
+                name=bot['name'],
+                id=bot['id'],
+                id_str=bot['id_str'],
+                indices=[2, 15]
+            )
+        ],
+        symbols=[]
+    ),
+    timestamp_ms="1537024212188",
+)
+
 init_tweet_no_mention = dict(
     created_at="Sat Sep 15 15:10:12 +0000 2018",
     id=1040981111734775808,
@@ -101,6 +130,36 @@ init_tweet_no_mention = dict(
     ),
     timestamp_ms="1537024212188",
 )
+
+init_tweet_no_mention_full_text = dict(
+    created_at="Sat Sep 15 15:10:12 +0000 2018",
+    id=1040981111734775808,
+    id_str="1040981111734775808",
+    full_text="Going live",
+    in_reply_to_status_id=None,
+    in_reply_to_status_id_str=None,
+    in_reply_to_user_id=None,
+    in_reply_to_user_id_str=None,
+    in_reply_to_screen_name=None,
+    user=user,
+    is_quote_status=False,
+    entities=dict(
+        hashtags=[],
+        urls=[],
+        user_mentions=[
+            dict(
+                screen_name=bot['screen_name'],
+                name=bot['name'],
+                id=bot['id'],
+                id_str=bot['id_str'],
+                indices=[2, 15]
+            )
+        ],
+        symbols=[]
+    ),
+    timestamp_ms="1537024212188",
+)
+
 
 quoted_mention = dict(
     created_at="Sat Sep 15 15:10:12 +0000 2018",

@@ -37,7 +37,7 @@ class CompilationByDMTestCase(AccountActivityTestBase, TestCase):
         self.mock_statuses_show_endpoint = m.register_uri(
             'GET',
             statuses_show_url_pattern,
-            json=fixtures.init_tweet_no_mention,
+            json=fixtures.init_tweet_no_mention_full_text,
         )
 
         self.mock_typing_indicator_endpoint = m.register_uri(

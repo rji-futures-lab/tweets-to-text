@@ -284,8 +284,6 @@ class TweetTextCompilation(TwitterMixin, models.Model):
     def complete(self):
         self.tweets = self.get_tweets()
 
-        self.init_tweet_json['full_text'] = self.init_tweet_json['text']
-
         self.tweets.append(self.init_tweet_json)
 
         sorted_tweets = sorted(self.tweets, key=lambda k: k['id'])
