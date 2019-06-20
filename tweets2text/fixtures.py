@@ -73,6 +73,35 @@ init_mention = dict(
     timestamp_ms="1537024212188",
 )
 
+init_tweet_no_mention = dict(
+    created_at="Sat Sep 15 15:10:12 +0000 2018",
+    id=1040981111734775808,
+    id_str="1040981111734775808",
+    text="Going live",
+    in_reply_to_status_id=None,
+    in_reply_to_status_id_str=None,
+    in_reply_to_user_id=None,
+    in_reply_to_user_id_str=None,
+    in_reply_to_screen_name=None,
+    user=user,
+    is_quote_status=False,
+    entities=dict(
+        hashtags=[],
+        urls=[],
+        user_mentions=[
+            dict(
+                screen_name=bot['screen_name'],
+                name=bot['name'],
+                id=bot['id'],
+                id_str=bot['id_str'],
+                indices=[2, 15]
+            )
+        ],
+        symbols=[]
+    ),
+    timestamp_ms="1537024212188",
+)
+
 quoted_mention = dict(
     created_at="Sat Sep 15 15:10:12 +0000 2018",
     id=1040981111734775808,
@@ -229,6 +258,35 @@ final_mention = dict(
     id=1040981111734775812,
     id_str="1040981111734775812",
     full_text="This bot was made in the RJI Futures Lab. @TweetsToText",
+    in_reply_to_status_id=None,
+    in_reply_to_status_id_str=None,
+    in_reply_to_user_id=None,
+    in_reply_to_user_id_str=None,
+    in_reply_to_screen_name=None,
+    user=user,
+    is_quote_status=False,
+    entities=dict(
+        hashtags=[],
+        urls=[],
+        user_mentions=[
+            dict(
+                screen_name="TweetsToText",
+                name="TweetsToText",
+                id=bot['id'],
+                id_str=bot['id_str'],
+                indices=[2, 15]
+            )
+        ],
+        symbols=[]
+    ),
+    timestamp_ms="1537024212188",
+)
+
+final_tweet_no_mention = dict(
+    created_at="Sat Sep 15 15:10:12 +0000 2018",
+    id=1040981111734775812,
+    id_str="1040981111734775812",
+    full_text="This bot was made in the RJI Futures Lab.",
     in_reply_to_status_id=None,
     in_reply_to_status_id_str=None,
     in_reply_to_user_id=None,
@@ -444,11 +502,38 @@ account_activity_w_self_reply_to_init_mention = dict(
     tweet_create_events=[self_reply_to_init_mention],
 )
 
+account_activity_w_request_by_dm = dict(
+    for_user_id=settings.BOT_ACCOUNT_ID_STR,
+    follow_events=[],
+    unfollow_events=[],
+    tweet_create_events=[],
+    direct_message_events=[
+        dict(
+            type="message_create",
+            created_timestamp=1561041559216,
+            id=1141717166443528196,
+            message_create=dict(
+                message_data=dict(
+                    entities=dict(
+                        urls=[
+                            dict(expanded_url="https://twitter.com/%s/status/%s" % (user['id'], tweet1['id']))
+                        ],
+                    ),
+                ),
+                sender_id="1141010176809398273",
+                target=dict(recipient_id="1017142357932769280")
+            ),
+        ),
+    ],
+)
+
 tweets = [tweet1, tweet2, tweet3, final_mention]
 
 threaded_tweets = [
     thread_tweet1, thread_tweet2, thread_tweet3, thread_final_mention
 ]
+
+tweets_without_mentions = [tweet1, tweet2, tweet3, final_tweet_no_mention]
 
 formatted_text = """Going live
 

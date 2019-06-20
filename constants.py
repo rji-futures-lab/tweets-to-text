@@ -1,6 +1,4 @@
 # flake8: noqa: E501
-import re
-
 instructions = (
     "Thanks for the follow! I'm here whenever you need me."
     "Here's a quick run-through of how this works:",
@@ -22,5 +20,3 @@ __all__ = (
     'instructions',
     'replies',
 )
-
-tweet_url_regex = re.compile(r'https://twitter\.com/TextTweets2/status/\d+')

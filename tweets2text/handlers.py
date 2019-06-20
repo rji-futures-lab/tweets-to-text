@@ -6,8 +6,7 @@ from tweets2text.models import (
     AccountActivity, FollowHistory, TweetTextCompilation, User
 )
 from zappa.asynchronous import task
-from tweets2text.twitter_api import TwitterUser
-from tweets2text import constants
+from tweets2text.twitter_api import Tweet, TwitterUser
 
 
 @task()
@@ -69,29 +68,33 @@ def handle_account_activity(account_activity_id):
                 )
                 new_compilation.reply_to_init_tweet()
 
-    for dm in activity.direct_message_events:       
+    for dm in activity.direct_message_events:
         if dm.type == 'message_create':
             try:
-                url = dm.message_create['message_data']["urls"][0]["expanded_url"]
+                url = dm.message_create['message_data']["entities"]["urls"][0]["expanded_url"]
             except (KeyError, IndexError):
                 pass
             else:
-                # re pattern match
-                match = constants.tweet_url_regex.match(url)
+                tweet_url_regex = re.compile(
+                    r'https://twitter\.com/(?P<screen_name>.+)/status/(?P<tweet_id>\d+)'
+                )
+                match = tweet_url_regex.match(url)
                 if match:
+                    screen_name = match.groupdict()['screen_name']
+                    tweet_id = match.groupdict()['tweet_id']
                     response = Tweet(id=tweet_id).get_from_twitter()
                     if response.response.ok:
                         init_tweet = response.json()
                         sender = TwitterUser(**init_tweet['user'])
                         if sender.is_follower:
-                            user = sender.get_or_create_tweets2text_user()
+                            user, created = sender.get_or_create_tweets2text_user()
                             compilation = user.compilations.create(
                                 init_tweet_json=init_tweet
                             )
-                            compilations.complete()
+                            compilation.complete()
                             url = 'https://%s%s' % (
                                 Site.objects.get_current().domain,
-                                pending_compilation.get_absolute_url()
+                                compilation.get_absolute_url()
                             )
                             user.send_dm(url)
 
