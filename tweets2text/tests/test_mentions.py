@@ -72,7 +72,7 @@ class InitMentionByFollowerTestCase(CreateTweetBaseTest, TestCase):
 
     def test_typing_indicator_call_count(self):
         self.assertEqual(
-            0, self.mock_dm_endpoint.call_count,
+            0, self.mock_typing_indicator_endpoint.call_count,
         )
 
     def test_dm_call_count(self):
@@ -102,7 +102,7 @@ class QuotedMentionTestCase(CreateTweetBaseTest, TestCase):
 
     def test_typing_indicator_call_count(self):
         self.assertEqual(
-            0, self.mock_dm_endpoint.call_count,
+            0, self.mock_typing_indicator_endpoint.call_count,
         )
 
     def test_dm_call_count(self):
@@ -137,7 +137,7 @@ class NonAuthorReplyMentionTestCase(CreateTweetBaseTest, TestCase):
 
     def test_typing_indicator_call_count(self):
         self.assertEqual(
-            0, self.mock_dm_endpoint.call_count,
+            0, self.mock_typing_indicator_endpoint.call_count,
         )
 
     def test_dm_call_count(self):
@@ -172,7 +172,7 @@ class RetweetMentionTestCase(CreateTweetBaseTest, TestCase):
 
     def test_typing_indicator_call_count(self):
         self.assertEqual(
-            0, self.mock_dm_endpoint.call_count,
+            0, self.mock_typing_indicator_endpoint.call_count,
         )
 
     def test_dm_call_count(self):
@@ -214,7 +214,7 @@ class FinalMentionByFollowerTestCase(CreateTweetBaseTest, TestCase):
 
     def test_typing_indicator_call_count(self):
         self.assertEqual(
-            1, self.mock_dm_endpoint.call_count,
+            1, self.mock_typing_indicator_endpoint.call_count,
         )
 
     def test_dm_call_count(self):
@@ -341,7 +341,7 @@ class DeletedInitMentionTestCase(AccountActivityTestBase, TestCase):
 
     def test_typing_indicator_call_count(self):
         self.assertEqual(
-            0, self.mock_dm_endpoint.call_count,
+            0, self.mock_typing_indicator_endpoint.call_count,
         )
 
     def test_dm_call_count(self):
@@ -396,7 +396,7 @@ class SelfReplyPendingCompilationTestCase(ThreadedTweetBaseTest, TestCase):
 
     def test_typing_indicator_call_count(self):
         self.assertEqual(
-            1, self.mock_dm_endpoint.call_count,
+            1, self.mock_typing_indicator_endpoint.call_count,
         )
 
     def test_dm_call_count(self):
@@ -459,7 +459,7 @@ class SelfReplyNoPendingCompilationTestCase(ThreadedTweetBaseTest, TestCase):
 
     def test_typing_indicator_call_count(self):
         self.assertEqual(
-            0, self.mock_dm_endpoint.call_count,
+            0, self.mock_typing_indicator_endpoint.call_count,
         )
 
     def test_dm_call_count(self):
@@ -504,7 +504,7 @@ class SelfReplyToInitMentionTestCase(ThreadedTweetBaseTest, TestCase):
 
     def test_typing_indicator_call_count(self):
         self.assertEqual(
-            0, self.mock_dm_endpoint.call_count,
+            0, self.mock_typing_indicator_endpoint.call_count,
         )
 
     def test_dm_call_count(self):
