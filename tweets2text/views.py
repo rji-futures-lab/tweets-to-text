@@ -76,8 +76,7 @@ def plain_text_view(request, compilation_id):
 
     response = HttpResponse(
         compilation.text,
-        content_type="text/plain",
-        charset="utf-8",
+        content_type="text/plain; charset=utf-8",
     )
 
     return response
