@@ -63,7 +63,7 @@ class User(TwitterMixin, models.Model):
             )
         )
         self.send_typing_indicator()
-        if not settings.TESTING:
+        if settings.THROTTLE_TWITTER_API_CALLS:
             sleep(3.1)
 
         sent_dm = self.twitter_api.request(
@@ -345,7 +345,7 @@ class TweetTextCompilation(TwitterMixin, models.Model):
         return self.save()
 
     def reply_to_init_tweet(self):
-        if not settings.TESTING:
+        if settings.THROTTLE_TWITTER_API_CALLS:
             sleep(5)
 
         status = '@{0} {1}'.format(

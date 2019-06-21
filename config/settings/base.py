@@ -3,7 +3,7 @@ import os
 import configparser
 
 DEBUG = False
-TESTING = False
+THROTTLE_TWITTER_API_CALLS = True
 
 ROOT_DIR = os.path.dirname(
     os.path.dirname(
