@@ -11,6 +11,7 @@ python:
  - "3.7"
 
 install:
+  pip install pipenv --upgrade
   pipenv sync --dev
 
 addons:
@@ -28,7 +29,9 @@ env:
     - TWITTER_ACCESS_TOKEN_SECRET=bang
 
 script:
-  - make test
+  pipenv run coverage run manage.py test --settings "config.settings.test" tweets2text
+  pipenv run coverage report -m
 
 after_success:
- - coveralls
+  pipenv run coveralls
+
