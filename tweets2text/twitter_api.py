@@ -1,3 +1,4 @@
+from html import unescape
 from django.apps import apps
 from django.conf import settings
 from TwitterAPI import TwitterAPI
@@ -86,6 +87,41 @@ class Tweet(TwitterObject):
     def is_self_reply(self):
         test = self.in_reply_to_user_id_str == self.user_obj.id_str
         return test
+
+    @property
+    def urls(self):
+        try:
+            urls = self.entities['urls']
+        except (AttributeError, IndexError, KeyError):
+            urls = []
+
+        return urls
+
+    @property
+    def user_mentions(self):
+        try:
+            users = [
+                u for u in self.entities['user_mentions']
+                if u["screen_name"] != 'TweetsToText'
+            ]
+        except (AttributeError, IndexError, KeyError):
+            users = []
+
+        return users
+
+    def get_formatted_text(self):
+        # substitute screen_names for user names, short urls for expanded ones
+        text = unescape(self.full_text).replace('@TweetsToText', '')
+
+        for url in self.urls:
+            text = text.replace(url['url'], url['expanded_url'])
+        
+        for user in self.user_mentions:
+            text = text.replace(
+                '@%s' % user['screen_name'], user['name']
+            )
+
+        return text.strip().replace("  ", " ").replace(" .", ".")
 
     def get_from_twitter(self):
         return self.twitter_api.request(

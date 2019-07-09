@@ -18,7 +18,7 @@ user = dict(
 user2 = dict(
     id=1267635120,
     id_str='1267635120',
-    name="RJIFuturesLab",
+    name="RJI Futures Lab",
     screen_name='RJIFuturesLab',
     location='Columbia, Mo'
 )
@@ -312,11 +312,11 @@ tweet3 = dict(
     timestamp_ms="1537024212188",
 )
 
-final_mention = dict(
+tweet4 = dict(
     created_at="Sat Sep 15 15:10:12 +0000 2018",
     id=1040981111734775812,
     id_str="1040981111734775812",
-    full_text="This bot was made in the RJI Futures Lab. @TweetsToText",
+    full_text="This bot was made in the @%s." % user2['screen_name'],
     in_reply_to_status_id=None,
     in_reply_to_status_id_str=None,
     in_reply_to_user_id=None,
@@ -328,13 +328,56 @@ final_mention = dict(
         hashtags=[],
         urls=[],
         user_mentions=[
+            user2,
+        ],
+        symbols=[]
+    ),
+    timestamp_ms="1537024212188",
+)
+
+tweet5 = dict(
+    created_at="Sat Sep 15 15:10:12 +0000 2018",
+    id=1040981111734775813,
+    id_str="1040981111734775813",
+    full_text="You can find out more here: https://t.co/1YJGc8kavu.",
+    in_reply_to_status_id=None,
+    in_reply_to_status_id_str=None,
+    in_reply_to_user_id=None,
+    in_reply_to_user_id_str=None,
+    in_reply_to_screen_name=None,
+    user=user,
+    is_quote_status=False,
+    entities=dict(
+        hashtags=[],
+        urls=[
             dict(
-                screen_name="TweetsToText",
-                name="TweetsToText",
-                id=bot['id'],
-                id_str=bot['id_str'],
-                indices=[2, 15]
-            )
+                url='https://t.co/1YJGc8kavu',
+                expanded_url="https://www.tweetstotext.io"
+            ),
+        ],
+        user_mentions=[],
+        symbols=[]
+    ),
+    timestamp_ms="1537024212188",
+)
+
+final_mention = dict(
+    created_at="Sat Sep 15 15:10:12 +0000 2018",
+    id=1040981111734775814,
+    id_str="1040981111734775814",
+    full_text="Thank you, that is all. @TweetsToText",
+    in_reply_to_status_id=None,
+    in_reply_to_status_id_str=None,
+    in_reply_to_user_id=None,
+    in_reply_to_user_id_str=None,
+    in_reply_to_screen_name=None,
+    user=user,
+    is_quote_status=False,
+    entities=dict(
+        hashtags=[],
+        urls=[],
+        user_mentions=[
+            bot,
         ],
         symbols=[]
     ),
@@ -343,9 +386,9 @@ final_mention = dict(
 
 final_tweet_no_mention = dict(
     created_at="Sat Sep 15 15:10:12 +0000 2018",
-    id=1040981111734775812,
-    id_str="1040981111734775812",
-    full_text="This bot was made in the RJI Futures Lab.",
+    id=1040981111734775814,
+    id_str="1040981111734775814",
+    full_text="Thank you, that is all.",
     in_reply_to_status_id=None,
     in_reply_to_status_id_str=None,
     in_reply_to_user_id=None,
@@ -356,15 +399,7 @@ final_tweet_no_mention = dict(
     entities=dict(
         hashtags=[],
         urls=[],
-        user_mentions=[
-            dict(
-                screen_name="TweetsToText",
-                name="TweetsToText",
-                id=bot['id'],
-                id_str=bot['id_str'],
-                indices=[2, 15]
-            )
-        ],
+        user_mentions=[],
         symbols=[]
     ),
     timestamp_ms="1537024212188",
@@ -433,11 +468,11 @@ thread_tweet3 = dict(
     timestamp_ms="1537024212188",
 )
 
-thread_final_mention = dict(
+thread_tweet4 = dict(
     created_at="Sat Sep 15 15:10:12 +0000 2018",
     id=1040981111734775812,
     id_str="1040981111734775812",
-    full_text="This bot was made in the RJI Futures Lab. @TweetsToText",
+    full_text="This bot was made in the @%s." % user2['screen_name'],
     in_reply_to_status_id=1040981111734775811,
     in_reply_to_status_id_str="1040981111734775811",
     in_reply_to_user_id=user['id'],
@@ -449,13 +484,56 @@ thread_final_mention = dict(
         hashtags=[],
         urls=[],
         user_mentions=[
+            user2,
+        ],
+        symbols=[]
+    ),
+    timestamp_ms="1537024212188",
+)
+
+thread_tweet5 = dict(
+    created_at="Sat Sep 15 15:10:12 +0000 2018",
+    id=1040981111734775813,
+    id_str="1040981111734775813",
+    full_text="You can find out more here: https://t.co/1YJGc8kavu.",
+    in_reply_to_status_id=1040981111734775812,
+    in_reply_to_status_id_str="1040981111734775812",
+    in_reply_to_user_id=user['id'],
+    in_reply_to_user_id_str=user['id_str'],
+    in_reply_to_screen_name='Bot2BotAction',
+    user=user,
+    is_quote_status=False,
+    entities=dict(
+        hashtags=[],
+        urls=[
             dict(
-                screen_name="TweetsToText",
-                name="TweetsToText",
-                id=bot['id'],
-                id_str=bot['id_str'],
-                indices=[2, 15]
-            )
+                url='https://t.co/1YJGc8kavu',
+                expanded_url="https://www.tweetstotext.io"
+            ),
+        ],
+        user_mentions=[],
+        symbols=[]
+    ),
+    timestamp_ms="1537024212188",
+)
+
+thread_final_mention = dict(
+    created_at="Sat Sep 15 15:10:12 +0000 2018",
+    id=1040981111734775814,
+    id_str="1040981111734775814",
+    full_text="Thank you, that is all. @TweetsToText",
+    in_reply_to_status_id=1040981111734775813,
+    in_reply_to_status_id_str="1040981111734775813",
+    in_reply_to_user_id=user['id'],
+    in_reply_to_user_id_str=user['id_str'],
+    in_reply_to_screen_name='Bot2BotAction',
+    user=user,
+    is_quote_status=False,
+    entities=dict(
+        hashtags=[],
+        urls=[],
+        user_mentions=[
+            bot,
         ],
         symbols=[]
     ),
@@ -477,15 +555,7 @@ self_reply_to_init_mention = dict(
     entities=dict(
         hashtags=[],
         urls=[],
-        user_mentions=[
-            dict(
-                screen_name="TweetsToText",
-                name="TweetsToText",
-                id=bot['id'],
-                id_str=bot['id_str'],
-                indices=[2, 15]
-            )
-        ],
+        user_mentions=[bot],
         symbols=[]
     ),
     timestamp_ms="1537024212188",
@@ -586,13 +656,14 @@ account_activity_w_request_by_dm = dict(
     ],
 )
 
-tweets = [tweet1, tweet2, tweet3, final_mention]
+tweets = [tweet1, tweet2, tweet3, tweet4, tweet5, final_mention]
 
 threaded_tweets = [
-    thread_tweet1, thread_tweet2, thread_tweet3, thread_final_mention
+    thread_tweet1, thread_tweet2, thread_tweet3, thread_tweet4, thread_tweet5,
+    thread_final_mention
 ]
 
-tweets_without_mentions = [tweet1, tweet2, tweet3, final_tweet_no_mention]
+tweets_without_mentions = [tweet1, tweet2, tweet3, tweet4, tweet5, final_tweet_no_mention]
 
 formatted_text = """Going live
 
@@ -602,4 +673,8 @@ It collects your tweets into plain text files.
 
 So you can take your brilliant observations somewhere else.
 
-This bot was made in the RJI Futures Lab."""
+This bot was made in the RJI Futures Lab.
+
+You can find out more here: https://www.tweetstotext.io.
+
+Thank you, that is all."""

@@ -1,4 +1,3 @@
-from html import unescape
 import json
 import random
 from time import sleep
@@ -288,10 +287,9 @@ class TweetTextCompilation(TwitterMixin, models.Model):
 
         sorted_tweets = sorted(self.tweets, key=lambda k: k['id'])
 
-        self.text = '\n\n'.join([
-            unescape(i['full_text']).replace('@TweetsToText', '').strip()
-            for i in sorted_tweets
-        ])
+        self.text = '\n\n'.join(
+            [Tweet(**t).get_formatted_text() for t in sorted_tweets]
+        )
 
         self.completed_at = timezone.now()
 
@@ -326,7 +324,7 @@ class TweetTextCompilation(TwitterMixin, models.Model):
             )
             tweets = []
             for i in pager.get_iterator(wait=3.5):
-                tweets.append(i['text'])
+                tweets.append(i)
         else:
             tweets = response.json()
 
