@@ -22,6 +22,7 @@ before_script:
 
 env:
   global:
+    - PIPENV_VERBOSITY=-1
     - S3_BUCKET_NAME=test-tweets-to-text-downloads
     - TWITTER_CONSUMER_KEY=foo
     - TWITTER_CONSUMER_SECRET=bar
@@ -29,9 +30,7 @@ env:
     - TWITTER_ACCESS_TOKEN_SECRET=bang
 
 script:
-  - pipenv run coverage run manage.py test --settings "config.settings.test" tweets2text
-  - pipenv run coverage report -m
+  - make test
 
 after_success:
-  - pipenv run coveralls
-
+  - coveralls
