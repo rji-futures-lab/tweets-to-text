@@ -645,7 +645,7 @@ account_activity_w_request_by_dm = dict(
                 message_data=dict(
                     entities=dict(
                         urls=[
-                            dict(expanded_url="https://twitter.com/%s/status/%s" % (user['id'], tweet1['id']))
+                            dict(expanded_url="https://twitter.com/%s/status/%s" % (user['id'], tweet1['id']))  # noqa: E501
                         ],
                     ),
                 ),
@@ -663,7 +663,9 @@ threaded_tweets = [
     thread_final_mention
 ]
 
-tweets_without_mentions = [tweet1, tweet2, tweet3, tweet4, tweet5, final_tweet_no_mention]
+tweets_without_mentions = [
+    tweet1, tweet2, tweet3, tweet4, tweet5, final_tweet_no_mention
+]
 
 formatted_text = """Going live
 

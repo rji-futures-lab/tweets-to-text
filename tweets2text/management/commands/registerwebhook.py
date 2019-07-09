@@ -43,4 +43,3 @@ class Command(BaseCommand, TwitterMixin):
                 self.stdout.write(
                     self.style.ERROR('Status')
                 )
-        

@@ -1,6 +1,6 @@
 """Django settings when running project locally."""
 import os
-from .base import * # noqa
+from .base import *
 
 DEBUG = True
 

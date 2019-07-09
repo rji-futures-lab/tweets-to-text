@@ -20,9 +20,9 @@ class Command(BaseCommand, TwitterMixin):
             ),
             method_override='POST'
         )
-        
         if response.status_code == 204:
             self.stdout.write(self.style.SUCCESS(' Subscribed to user.'))
         else:
-            import ipdb; ipdb.set_trace()
-        
+            self.stdout.write(
+                self.style.ERROR(' Status code: %s' % response.status_code)
+            )

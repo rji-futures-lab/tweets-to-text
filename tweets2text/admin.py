@@ -14,24 +14,20 @@ from .models import (
 
 
 class JSONArrayLength(Func):
-    """
-    Returns the length of a JSON array.
-    """
+    """Returns the length of a JSON array."""
+
     function = 'JSONB_ARRAY_LENGTH'
     output_field = IntegerField()
 
 
 class JSONExtractPath(Func):
-    """
-    Returns JSON value pointed to by key.
-    """
+    """Returns JSON value pointed to by key."""
+
     template = "JSONB_EXTRACT_PATH(%(expressions)s, '%(key)s')"
     output_field = JSONField()
 
     def __init__(self, expression, key):
-        """
-        Create an instance.
-        """
+        """Create an instance."""
         super(JSONExtractPath, self).__init__(expression, key=key)
 
 
@@ -39,12 +35,13 @@ class JSONExtractPath(Func):
 class AccountActivityAdmin(admin.ModelAdmin):
     date_hierarchy = 'received_at'
     list_display = (
-        'id', 'received_at', 'processing_started_at', 'processing_completed_at',
-        'follow_event_count', 'unfollow_event_count', 'tweet_create_event_count'
+        'id', 'received_at', 'processing_started_at',
+        'processing_completed_at', 'follow_event_count',
+        'unfollow_event_count', 'tweet_create_event_count'
     )
     readonly_fields = (
-        'id', 'received_at', 'processing_started_at', 'processing_completed_at',
-        'pretty_json_data',
+        'id', 'received_at', 'processing_started_at',
+        'processing_completed_at', 'pretty_json_data',
     )
 
     def get_queryset(self, request):
@@ -75,9 +72,7 @@ class AccountActivityAdmin(admin.ModelAdmin):
     unfollow_event_count.admin_order_field = 'unfollow_event_count'
     tweet_create_event_count.admin_order_field = 'tweet_create_event_count'
 
-
     def pretty_json_data(self, instance):
-        """Function to display pretty version of our data"""
         response = json.dumps(instance.json_data, sort_keys=True, indent=2)
 
         # Truncate the data. Alter as needed
@@ -112,11 +107,11 @@ class StatusChoiceFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         """
-        Returns a list of tuples. The first element in each
-        tuple is the coded value for the option that will
-        appear in the URL query. The second element is the
-        human-readable name for the option that will appear
-        in the right sidebar.
+        Return a list of tuples.
+
+        The first element in each tuple is the coded value for the option that
+        will appear in the URL query. The second element is the human-readable
+        name for the option that will appear in the right sidebar.
         """
         return (
             ('co', ('Completed')),
@@ -126,8 +121,9 @@ class StatusChoiceFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         """
-        Returns the filtered queryset based on the value
-        provided in the query string and retrievable via
+        Return the filtered queryset.
+
+        Filter based on value provided in the query string and retrievable via
         `self.value()`.
         """
         if self.value() == 'co':
@@ -157,8 +153,8 @@ class TweetTextCompilationAdmin(admin.ModelAdmin):
 
         return qs.annotate(
             status=Case(
-                When(completed_at__isnull=False,then=Value('co')),
-                When(init_tweet_deleted=True,then=Value('ca')),
+                When(completed_at__isnull=False, then=Value('co')),
+                When(init_tweet_deleted=True, then=Value('ca')),
                 default=Value('pe'),
                 output_field=CharField(),
             )
@@ -174,10 +170,10 @@ class TweetTextCompilationAdmin(admin.ModelAdmin):
 
     status.admin_order_field = 'status'
 
-
     def pretty_init_tweet_json(self, instance):
-        """Function to display pretty version of our data"""
-        response = json.dumps(instance.init_tweet_json, sort_keys=True, indent=2)
+        response = json.dumps(
+            instance.init_tweet_json, sort_keys=True, indent=2
+        )
 
         # Truncate the data. Alter as needed
         response = response[:5000]
@@ -195,8 +191,9 @@ class TweetTextCompilationAdmin(admin.ModelAdmin):
         return mark_safe(style + response)
 
     def pretty_final_tweet_json(self, instance):
-        """Function to display pretty version of our data"""
-        response = json.dumps(instance.final_tweet_json, sort_keys=True, indent=2)
+        response = json.dumps(
+            instance.final_tweet_json, sort_keys=True, indent=2
+        )
 
         # Truncate the data. Alter as needed
         response = response[:5000]
@@ -231,7 +228,8 @@ class UserAdmin(admin.ModelAdmin):
         'completed_request_count', 'pending_request_count'
     )
     readonly_fields = (
-        'id', 'name', 'screen_name', 'location', 'last_follow_at', 'pretty_json_data'
+        'id', 'name', 'screen_name', 'location', 'last_follow_at',
+        'pretty_json_data',
     )
     search_fields = ['id', 'name', 'screen_name', 'location']
     # is currently a follower?
@@ -241,10 +239,14 @@ class UserAdmin(admin.ModelAdmin):
 
         return qs.annotate(
             completed_request_count=Count(
-                'compilations', filter=Q(compilations__completed_at__isnull=True)
+                'compilations', filter=Q(
+                    compilations__completed_at__isnull=True
+                )
             ),
             pending_request_count=Count(
-                'compilations', filter=Q(compilations__completed_at__isnull=False)
+                'compilations', filter=Q(
+                    compilations__completed_at__isnull=False
+                )
             ),
         ).order_by('-last_follow_at')
 
@@ -258,7 +260,6 @@ class UserAdmin(admin.ModelAdmin):
     pending_request_count.admin_order_field = 'pending_request_count'
 
     def pretty_json_data(self, instance):
-        """Function to display pretty version of our data"""
         response = json.dumps(instance.json_data, sort_keys=True, indent=2)
 
         # Truncate the data. Alter as needed

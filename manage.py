@@ -1,5 +1,7 @@
+"""Django's command-line utility for administrative tasks."""
 import os
 import sys
+
 
 if __name__ == "__main__":
     # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")

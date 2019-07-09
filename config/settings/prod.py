@@ -1,5 +1,5 @@
 """Django settings when running project in production."""
-from .base import * # noqa
+from .base import *
 
 ALLOWED_HOSTS = [
     '.execute-api.us-east-2.amazonaws.com',

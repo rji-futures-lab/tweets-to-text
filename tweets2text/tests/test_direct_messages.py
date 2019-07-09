@@ -3,9 +3,7 @@ from requests_mock import Mocker
 from django.test import TestCase
 from tweets2text import fixtures
 from tweets2text.models import TweetTextCompilation, User
-from .base import (
-    AccountActivityTestBase, CreateTweetBaseTest, ThreadedTweetBaseTest
-)
+from .base import AccountActivityTestBase
 
 
 class CompilationByDMTestCase(AccountActivityTestBase, TestCase):

@@ -29,7 +29,7 @@ class TwitterObject(TwitterMixin):
             self.id_str = getattr(self, 'id_str', str(self.id))
 
     def get_from_twitter(self):
-        return self.twitter_api.request(resource_url)
+        return self.twitter_api.request(self.resource_url)
 
     @property
     def resource_url(self):
@@ -47,12 +47,12 @@ class Tweet(TwitterObject):
     def is_actionable_mention(self):
         if self.user_obj.is_follower:
             if self.is_reply:
+                t2t_user = self.user_obj.as_tweets2text_user
                 if (
-                    self.is_self_reply and
-                    self.user_obj.as_tweets2text_user.has_pending_compilation
+                    self.is_self_reply
+                    and t2t_user.has_pending_compilation
                 ):
-                    user = self.user_obj.as_tweets2text_user 
-                    init_tweet = user.pending_compilation.init_tweet
+                    init_tweet = t2t_user.pending_compilation.init_tweet
                     if init_tweet.id == self.in_reply_to_status_id:
                         is_actionable = False
                     else:
@@ -115,7 +115,7 @@ class Tweet(TwitterObject):
 
         for url in self.urls:
             text = text.replace(url['url'], url['expanded_url'])
-        
+
         for user in self.user_mentions:
             text = text.replace(
                 '@%s' % user['screen_name'], user['name']
@@ -127,6 +127,7 @@ class Tweet(TwitterObject):
         return self.twitter_api.request(
             self.resource_url, dict(tweet_mode='extended'),
         )
+
 
 class TwitterUser(TwitterObject):
     resource = 'users'
@@ -153,7 +154,7 @@ class TwitterUser(TwitterObject):
     def get_or_create_tweets2text_user(self):
         m = apps.get_app_config('tweets2text').get_model('User')
 
-        try: 
+        try:
             user = m.objects.get(id_str=self.id_str)
         except m.DoesNotExist:
             user = m.objects.create(
@@ -162,7 +163,6 @@ class TwitterUser(TwitterObject):
                 name=self.name,
                 screen_name=self.screen_name,
                 location=self.location,
-                json_data=self.__dict__,
             )
             created = True
         else:
@@ -173,4 +173,11 @@ class TwitterUser(TwitterObject):
     @property
     def as_tweets2text_user(self):
         m = apps.get_app_config('tweets2text').get_model('User')
-        return m.objects.get(id_str=self.id_str)
+        try:
+            t2t_user = m.objects.get(id_str=self.id_str)
+        except m.DoesNotExist:
+            if self.is_follower:
+                t2t_user = self.get_or_create_tweets2text_user()[0]
+            else:
+                raise Exception('No record of Twitter user #%s as follower.')
+        return t2t_user

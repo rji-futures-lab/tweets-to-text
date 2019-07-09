@@ -1,5 +1,4 @@
 """Migrate data from DynamoDB into PostgreSQL."""
-from urllib.parse import urljoin
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from tweets2text.twitter_api import TwitterMixin
@@ -29,4 +28,6 @@ class Command(BaseCommand, TwitterMixin):
         if response.status_code == 204:
             self.stdout.write(self.style.SUCCESS('Webhook deleted.'))
         else:
-            import ipdb; ipdb.set_trace()
+            self.stdout.write(
+                self.style.ERROR(' Status code: %s' % response.status_code)
+            )

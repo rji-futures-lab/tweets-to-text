@@ -1,5 +1,4 @@
 """Django settings when serving locally with prod database."""
-import os
 from .prod import * # noqa
 
 DEBUG = True

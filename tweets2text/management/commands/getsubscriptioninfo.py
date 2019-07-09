@@ -37,6 +37,5 @@ class Command(BaseCommand, TwitterMixin):
                         )
             else:
                 self.stdout.write(
-                    self.style.ERROR('Status')
+                    self.style.ERROR(' Status code: %s' % response.status_code)
                 )
-        

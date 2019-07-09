@@ -36,7 +36,10 @@ class User(TwitterMixin, models.Model):
         blank=True,
         editable=False,
     )
-    json_data = JSONField(editable=False)
+    json_data = JSONField(
+        editable=False,
+        default=dict
+    )
     last_follow_at = models.DateTimeField(
         default=timezone.now,
         editable=False,
@@ -124,12 +127,14 @@ class FollowHistory(models.Model):
     @property
     def created_datetime(self):
         self._created_datetime = timezone.datetime.fromtimestamp(
-            self.created_timestamp/1000.0, tz=timezone.utc
+            self.created_timestamp / 1000.0, tz=timezone.utc
         )
         return self._created_datetime
 
     def __str__(self):
-        return '{0} on {1}'.format(self.event_json['type'], self.created_datetime)
+        return '{0} on {1}'.format(
+            self.event_json['type'], self.created_datetime
+        )
 
 
 class AccountActivity(models.Model):
@@ -175,9 +180,11 @@ class AccountActivity(models.Model):
             bot_id = self.json_data['for_user_id']
             self._follow_events = [
                 f for f in self.get_events_by_type('follow_events')
-                if f.type == 'follow' and
-                TwitterUser(**f.target).id_str == bot_id and
-                TwitterUser(**f.source).id_str != bot_id
+                if (
+                    f.type == 'follow'
+                    and TwitterUser(**f.target).id_str == bot_id
+                    and TwitterUser(**f.source).id_str != bot_id
+                )
             ]
 
         return self._follow_events
@@ -190,9 +197,11 @@ class AccountActivity(models.Model):
             bot_id = self.json_data['for_user_id']
             self._unfollow_events = [
                 f for f in self.get_events_by_type('unfollow_events')
-                if f.type == 'unfollow' and
-                TwitterUser(**f.target).id_str == bot_id and
-                TwitterUser(**f.source).id_str != bot_id
+                if (
+                    f.type == 'unfollow'
+                    and TwitterUser(**f.target).id_str == bot_id
+                    and TwitterUser(**f.source).id_str != bot_id
+                )
             ]
 
         return self._unfollow_events
@@ -369,7 +378,9 @@ class TweetTextCompilation(TwitterMixin, models.Model):
         return tweet
 
     def __str__(self):
-        return 'from {0} (on {1})'.format(self.user.screen_name, self.requested_at)
+        return 'from {0} (on {1})'.format(
+            self.user.screen_name, self.requested_at
+        )
 
     objects = TweetTextCompilationManager()
 

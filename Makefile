@@ -1,4 +1,4 @@
-.PHONY: syncdbschema createrds deleterds recreaterds deploy
+.PHONY: syncdbschema createrds deleterds recreaterds deploy test
 
 syncdbschema:
 	dropdb tweets2text
@@ -44,3 +44,7 @@ deploy:
 
 	python manage.py collectstatic --noinput \
 	--settings "config.settings.prod"
+
+test:
+	flake8
+	python manage.py test --settings "config.settings.test" tweets2text

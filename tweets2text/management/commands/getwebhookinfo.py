@@ -1,5 +1,4 @@
 """Migrate data from DynamoDB into PostgreSQL."""
-from django.conf import settings
 from django.core.management.base import BaseCommand
 from tweets2text.twitter_api import TwitterMixin
 import logging
@@ -39,4 +38,3 @@ class Command(BaseCommand, TwitterMixin):
             self.stdout.write(
                 self.style.WARNING('No environments')
             )
-        

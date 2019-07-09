@@ -115,6 +115,7 @@ class NonAuthorReplyMentionTestCase(CreateTweetBaseTest, TestCase):
     """Test case for reply by bot follower who isn't author of init mention."""
 
     account_activity = fixtures.account_activity_w_reply_mention
+    friendship_lookup_response = [dict(connections=[])]
 
     def test_compilation_count(self):
         count = TweetTextCompilation.objects.count()

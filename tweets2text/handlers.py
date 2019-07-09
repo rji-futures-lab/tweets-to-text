@@ -3,7 +3,7 @@ from django.contrib.sites.models import Site
 from django.db import IntegrityError
 from django.utils import timezone
 from tweets2text.models import (
-    AccountActivity, FollowHistory, TweetTextCompilation, User
+    AccountActivity, FollowHistory, TweetTextCompilation
 )
 from zappa.asynchronous import task
 from tweets2text.twitter_api import Tweet, TwitterUser
@@ -31,7 +31,7 @@ def handle_account_activity(account_activity_id):
             user.save()
             user.send_dm('Welcome back!')
 
-        user.follow_history.create(event_json=follow.__dict__)        
+        user.follow_history.create(event_json=follow.__dict__)
 
     for unfollow in activity.unfollow_events:
         unfollower = TwitterUser(**unfollow.source)
@@ -70,24 +70,24 @@ def handle_account_activity(account_activity_id):
 
     for dm in activity.direct_message_events:
         if dm.type == 'message_create':
+            message_data = dm.message_create['message_data']
             try:
-                url = dm.message_create['message_data']["entities"]["urls"][0]["expanded_url"]
+                url = message_data["entities"]["urls"][0]["expanded_url"]
             except (KeyError, IndexError):
                 pass
             else:
                 tweet_url_regex = re.compile(
-                    r'https://twitter\.com/(?P<screen_name>.+)/status/(?P<tweet_id>\d+)'
+                    r'https://twitter\.com/.+/status/(?P<tweet_id>\d+)'
                 )
                 match = tweet_url_regex.match(url)
                 if match:
-                    screen_name = match.groupdict()['screen_name']
                     tweet_id = match.groupdict()['tweet_id']
                     response = Tweet(id=tweet_id).get_from_twitter()
                     if response.response.ok:
                         init_tweet = response.json()
                         sender = TwitterUser(**init_tweet['user'])
                         if sender.is_follower:
-                            user, created = sender.get_or_create_tweets2text_user()
+                            user = sender.get_or_create_tweets2text_user()[0]
                             compilation = user.compilations.create(
                                 init_tweet_json=init_tweet
                             )
