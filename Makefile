@@ -46,5 +46,5 @@ deploy:
 	--settings "config.settings.prod"
 
 test:
-	flake8
-	python manage.py test --settings "config.settings.test" tweets2text
+	coverage run manage.py test --settings "config.settings.test" tweets2text
+	coverage report -m

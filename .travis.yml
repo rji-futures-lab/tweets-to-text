@@ -6,12 +6,16 @@ cache:
   - pip
 
 python:
- - "3.6"
+ - "3.7"
 
-install: "make"
+install:
+  pipenv install --dev
+
+addons:
+  postgresql: "9.6"
 
 before_script:
-  - make localdynamodb
+  - psql -c 'create database tweets2text;' -U postgres
 
 env:
   global:
