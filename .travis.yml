@@ -29,7 +29,8 @@ before_script:
   - echo 'twitter_access_token = whiz' >> secrets.cfg
   - echo 'twitter_access_token_secret = bang' >> secrets.cfg
   - echo 'twitter_api_env = proddy' >> secrets.cfg
-  - echo 'bot_account_id_str = 1017142357932769280\n' >> secrets.cfg
+  - echo 'bot_account_id_str = 1017142357932769280' >> secrets.cfg
+  - echo '' >> secrets.cfg
   - echo '[local]' >> secrets.cfg
   - echo 'db_host = localhost' >> secrets.cfg
 
