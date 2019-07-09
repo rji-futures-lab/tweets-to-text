@@ -4,24 +4,23 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
-python-dotenv = "*"
+django = "*"
+django-storages = "*"
 twitterapi = "*"
+psycopg2-binary = "*"
 zappa = "*"
-urllib3 = ">=1.24.2"
-Jinja2 = ">=2.10.1"
-pyyaml = ">=4.2b1"
+boto3 = "==1.9.80"
+botocore = "==1.12.80"
+s3transfer = "==0.1.13"
 
 [dev-packages]
+django-debug-toolbar = "*"
 "flake8" = "*"
 "flake8-docstrings" = "*"
 ipdb = "*"
 ipython = "*"
+python-coveralls = "*"
 requests-mock = "*"
-blinker = "*"
-pytest-dynamodb = "*"
-pytest-cov = "*"
-coveralls = "*"
 
 [requires]
-python_version = "3.6.6"
+python_version = "3.7.3"

@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" type="text/css" href="{% static 'tweets2text/style.css' %}" />
+
+  <title>TweetsToText</title>
+</head>
+
+<body>
+
+<main role="main">
+  <div class="jumbotron">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 ">
+          <h1><span class="bot-name">TweetsToText</span> is a <span class="keyword">bot</span> that lives on <span class="keyword">Twitter</span>. It collects your <span class="keyword">tweets</span> into <span class="keyword">plain text</span> files. So you can take your <span class="keyword">brilliant observations</span> somewhere else.</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row center">
+      <div class='col-10'>
+        <h2>Meet the bot</h2>
+        <hr>
+        <h4>Current Status: <span class='status beta'>In Beta</span></h4>
+        <p>TweetsToText is live for beta testing. We're asking potential users to try using it in realistic circumstances. You may encounter bugs or unexpected behavior, and we really want to hear from you if you do. <a href="https://github.com/rji-futures-lab/tweets-to-text/issues">File on issue</a> or <a href="mailto:gordonj@rjionline.org">drop us a line</a>. We want your feedback, good or bad (but especially the bad).</p>
+
+        <h2>How it works</h2>
+        <hr>
+
+        <ol>
+          <li><strong>Follow <a href="https://twitter.com/TweetsToText">@TweetsToText</a></strong>, and TweetsToText will send you a welcome direct message. Now that we know each other, let's get to work.</li>
+          <li>Just before you start live-tweeting, <strong>tweet @TweetsToText</strong>. You'll get a reply confirming that we've got your back.</li>
+          <li><strong>Do your thing</strong> just like you normally would.</li>
+          <li>When your finished, <strong>tweet @TweetsToText again</strong> in your final tweet.</li>
+          <li><strong>Check your DMs</strong> for a message with a link to your text.</li>
+        </ol>
+
+        <h2>Who it's for</h2>
+        <hr>
+
+        <p>Anyone! But more specifically, we made this for journalists covering live events who often re-purpose their tweets into copy they file later in their various content management systems.</p>
+
+        <p>Maybe you've heard of <a href="https://threadreaderapp.com/">ThreadReaderApp</a>. It's a great service...for readers on Twitter. TweetsToText is for writers on Twitter.</p>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+  <footer class="site-footer" aria-label="Footer">
+    <div class="container">
+      <p><a href="https://github.com/rji-futures-lab/tweets-to-text">Built in the RJI Futures Lab</a></p>
+      <div id="copyright">
+        <p>
+          Copyright © 2019 - Curators of the <a href="http://missouri.edu/">University of Missouri</a>. All rights reserved.
+        </p>
+        <p>
+          <a href="http://missouri.edu/dmca/">DMCA</a> and other <a
+          href="http://missouri.edu/copyright.php">copyright information</a>. An <a
+          href="http://missouri.edu/eeo-aa.php">equal opportunity/affirmative action</a> institution. <a
+          href="/privacy-policy">Privacy Policy</a>. <a
+          href="/terms-service">Terms of Service</a>.
+        </p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>

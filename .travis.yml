@@ -1,28 +1,45 @@
+dist: xenial
+
 language: python
 
-sudo: false
+sudo: True
 
 cache:
   - pip
 
 python:
- - "3.6"
+ - "3.7"
 
-install: "make"
+install:
+  - pip install pipenv --upgrade
+  - pipenv sync --dev
+
+addons:
+  postgresql: "10"
 
 before_script:
-  - make localdynamodb
+  - psql -c 'create database tweets2text;' -U postgres
+  - touch secrets.cfg
+  - echo '[DEFAULT]' >> secrets.cfg
+  - echo 'django_secret_key = shhh' >> secrets.cfg
+  - echo 'db_name = tweets2text' >> secrets.cfg
+  - echo 'db_user = postgres' >> secrets.cfg
+  - echo 'twitter_consumer_key = foo' >> secrets.cfg
+  - echo 'twitter_consumer_secret = bar' >> secrets.cfg
+  - echo 'twitter_access_token = whiz' >> secrets.cfg
+  - echo 'twitter_access_token_secret = bang' >> secrets.cfg
+  - echo 'twitter_api_env = proddy' >> secrets.cfg
+  - echo 'bot_account_id_str = 1017142357932769280' >> secrets.cfg
+  - echo '' >> secrets.cfg
+  - echo '[local]' >> secrets.cfg
+  - echo 'db_host = localhost' >> secrets.cfg
 
 env:
   global:
-    - S3_BUCKET_NAME=test-tweets-to-text-downloads
-    - TWITTER_CONSUMER_KEY=foo
-    - TWITTER_CONSUMER_SECRET=bar
-    - TWITTER_ACCESS_TOKEN=whiz
-    - TWITTER_ACCESS_TOKEN_SECRET=bang
+    - PIPENV_VERBOSITY=-1
 
 script:
   - make test
 
 after_success:
- - coveralls
+  - coveralls
