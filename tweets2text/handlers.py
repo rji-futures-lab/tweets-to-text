@@ -70,9 +70,9 @@ def handle_account_activity(account_activity_id):
 
     for dm in activity.direct_message_events:
         if dm.type == 'message_create':
-            message_data = dm.message_create['message_data']
+            m_data = dm.message_create['message_data']
             try:
-                url = message_data["entities"]["urls"][0]["expanded_url"]
+                url = m_data["entities"]["urls"][0]["expanded_url"]
             except (KeyError, IndexError):
                 pass
             else:
@@ -87,7 +87,13 @@ def handle_account_activity(account_activity_id):
                         init_tweet = response.json()
                         sender = TwitterUser(**init_tweet['user'])
                         if sender.is_follower:
-                            thread_only = "thread" in message_data['text']
+                            if (
+                                'text' in m_data
+                                and "thread" in m_data['text'].lower()
+                            ):
+                                thread_only = True
+                            else:
+                                thread_only = False
                             user = sender.get_or_create_tweets2text_user()[0]
                             compilation = user.compilations.create(
                                 init_tweet_json=init_tweet,
