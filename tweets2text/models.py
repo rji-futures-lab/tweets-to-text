@@ -288,6 +288,9 @@ class TweetTextCompilation(TwitterMixin, models.Model):
         blank=True,
         editable=False,
     )
+    thread_only = models.BooleanField(
+        default=False,
+    )
 
     def complete(self):
         self.tweets = self.get_tweets()
@@ -296,9 +299,21 @@ class TweetTextCompilation(TwitterMixin, models.Model):
 
         sorted_tweets = sorted(self.tweets, key=lambda k: k['id'])
 
-        self.text = '\n\n'.join(
-            [Tweet(**t).get_formatted_text() for t in sorted_tweets]
-        )
+        if self.thread_only:
+            init_tweet = sorted_tweets.pop(0)
+            threaded_tweets = [init_tweet]
+            for tweet in sorted_tweets:
+                if tweet['in_reply_to_status_id'] in [t['id'] for t in threaded_tweets]:
+                    threaded_tweets.append(tweet)
+                else:
+                    break
+            self.text = '\n\n'.join(
+                [Tweet(**t).get_formatted_text() for t in threaded_tweets]
+            )
+        else:
+            self.text = '\n\n'.join(
+                [Tweet(**t).get_formatted_text() for t in sorted_tweets]
+            )
 
         self.completed_at = timezone.now()
 

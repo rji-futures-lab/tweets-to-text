@@ -87,9 +87,11 @@ def handle_account_activity(account_activity_id):
                         init_tweet = response.json()
                         sender = TwitterUser(**init_tweet['user'])
                         if sender.is_follower:
+                            thread_only = "thread" in message_data['text']
                             user = sender.get_or_create_tweets2text_user()[0]
                             compilation = user.compilations.create(
-                                init_tweet_json=init_tweet
+                                init_tweet_json=init_tweet,
+                                thread_only=thread_only
                             )
                             compilation.complete()
                             url = 'https://%s%s' % (
