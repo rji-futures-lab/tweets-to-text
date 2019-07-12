@@ -9,7 +9,7 @@ instructions = (
     "Second way, via DM:",
     "Scroll back on your timeline to the first tweet you want to capture.",
     "DM this tweet to me (@TweetsToText.)",
-    "If the tweet is the first in a thread, and you just want the tweets in that thread, include the work \"thread\" in the text of your DM.",
+    "If the tweet is the first in a thread, and you just want the tweets in that thread, include the word \"thread\" in the text of your DM.",
     "Wait a few seconds, and I'll respond with a link to your text.",
     "That's it! You can also find out more at https://www.tweetstotext.io",
 )
