@@ -8,7 +8,7 @@ from django.db import models
 from django.utils import timezone
 from requests.exceptions import HTTPError
 from TwitterAPI import TwitterPager
-import constants
+from .constants import instructions, replies
 from tweets2text.twitter_api import (
     Tweet, TwitterMixin, TwitterObject, TwitterUser
 )
@@ -76,7 +76,7 @@ class User(TwitterMixin, models.Model):
         return sent_dm
 
     def send_welcome_dm(self):
-        for m in constants.instructions:
+        for m in instructions:
             self.send_dm(m)
 
     def send_typing_indicator(self):
@@ -371,7 +371,7 @@ class TweetTextCompilation(TwitterMixin, models.Model):
             sleep(5)
 
         status = '@{0} {1}'.format(
-            self.user.screen_name, random.choice(constants.replies)
+            self.user.screen_name, random.choice(replies)
         )
         params = dict(
             status=status,
