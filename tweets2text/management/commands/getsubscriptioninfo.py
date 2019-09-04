@@ -1,4 +1,4 @@
-"""Migrate data from DynamoDB into PostgreSQL."""
+"""Get a list of Twitter accounts the app is currently subscribed to."""
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from tweets2text.twitter_api import TwitterMixin
@@ -8,9 +8,9 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand, TwitterMixin):
-    """Get info for current Twitter webhook."""
+    """Get a list of Twitter accounts the app is currently subscribed to."""
 
-    help = """Get info for current Twitter webhook."""
+    help = "Get a list of Twitter accounts the app is currently subscribed to."
 
     def handle(self, *args, **options):
         """Handle the command."""

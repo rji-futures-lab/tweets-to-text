@@ -1,4 +1,4 @@
-"""Migrate data from DynamoDB into PostgreSQL."""
+"""Delete the current webhook with Twitter."""
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from tweets2text.twitter_api import TwitterMixin
@@ -8,9 +8,18 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand, TwitterMixin):
-    """Get info for current Twitter webhook."""
+    """
+    Delete the current webhook with Twitter.
 
-    help = """Get info for current Twitter webhook."""
+    Sends a DELETE request to the webhooks endpoint of the Twitter Account
+    Activity API.
+    """
+
+    help = (
+        "Delete the current webhook with Twitter.\n"
+        "Sends a DELETE request to the webhooks endpoint of the Twitter "
+        "Account Activity API."
+    )
 
     def add_arguments(self, parser):
         parser.add_argument('webhook_id', type=str)

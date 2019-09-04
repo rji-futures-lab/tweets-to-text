@@ -6,10 +6,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Command(BaseCommand, TwitterMixin):
+class Command(BaseCommand):
     """Delete a user (and related records) from the db."""
 
-    help = """Delete a user (and related records) from the db."""
+    help = "Delete a user (and related records) from the db."
 
     def add_arguments(self, parser):
         parser.add_argument('user_id', type=int)

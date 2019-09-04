@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand, TwitterMixin):
     """Get info for current Twitter webhook."""
 
-    help = """Get info for current Twitter webhook."""
+    help = "Get info for current Twitter webhook."
 
     def handle(self, *args, **options):
         """Handle the command."""

@@ -1,4 +1,4 @@
-"""Migrate data from DynamoDB into PostgreSQL."""
+"""Register a webhook url for the current domain."""
 from urllib.parse import urljoin
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -9,9 +9,19 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand, TwitterMixin):
-    """Get info for current Twitter webhook."""
+    """
+    Register a webhook url for the current domain.
 
-    help = """Get info for current Twitter webhook."""
+    Sends a POST request to the webhooks endpoint of Twitter's Account Activity
+    API. This triggers a CRC request from Twitter to the app's webhook url.
+    """
+
+    help = (
+        "Register a webhook url for the current domain.\n",
+        "Sends a POST request to the webhooks endpoint of Twitter's Account "
+        "Activity API. This triggers a CRC request from Twitter to the app's "
+        "webhook url."
+    )
 
     def add_arguments(self, parser):
         parser.add_argument('domain', type=str)
