@@ -14,15 +14,16 @@ class Command(BaseCommand, TwitterMixin):
 
     def handle(self, *args, **options):
         """Handle the command."""
+        env = settings.TWITTER_API_ENV
+        endpoint_url = f"account_activity/all/:{env}/subscriptions"
+
         response = self.twitter_api.request(
-            'account_activity/all/:{}/subscriptions'.format(
-                settings.TWITTER_API_ENV,
-            ),
-            method_override='POST'
+            endpoint_url, method_override='POST'
         )
+
         if response.status_code == 204:
-            self.stdout.write(self.style.SUCCESS(' Subscribed to user.'))
+            msg = self.style.SUCCESS(" Subscribed to user.")
         else:
-            self.stdout.write(
-                self.style.ERROR(' Status code: %s' % response.status_code)
-            )
+            msg = self.style.ERROR(f" Status code: {response.status_code}")
+
+        return msg

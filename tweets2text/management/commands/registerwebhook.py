@@ -1,7 +1,8 @@
 """Register a webhook url for the current domain."""
-from urllib.parse import urljoin
 from django.conf import settings
-from django.core.management.base import BaseCommand
+from django.contrib.sites.models import Site
+from django.core.management.base import BaseCommand, CommandError
+from requests.exceptions import HTTPError
 from tweets2text.twitter_api import TwitterMixin
 import logging
 
@@ -23,33 +24,34 @@ class Command(BaseCommand, TwitterMixin):
         "webhook url."
     )
 
-    def add_arguments(self, parser):
-        parser.add_argument('domain', type=str)
-
     def handle(self, *args, **options):
         """Handle the command."""
-        url = urljoin(options['domain'], 'webhooks/twitter/')
+        domain = Site.objects.get_current().domain
+        webhook_url = f"https://{domain}/webhooks/twitter/"
 
-        self.stdout.write(' Registering %s...' % url)
+        self.stdout.write(f" Registering {webhook_url}...")
+
+        endpoint = f"account_activity/all/:{settings.TWITTER_API_ENV}/webhooks"
 
         response = self.twitter_api.request(
-            'account_activity/all/:%s/webhooks' % settings.TWITTER_API_ENV,
-            params={'url': url},
+            endpoint, params={'url': webhook_url}
         )
 
-        if response.response.ok:
-            for k, v in response.json().items():
-                self.stdout.write(
-                    self.style.SUCCESS(' %s: %s' % (k, v))
-                )
-        else:
+        try:
+            response.raise_for_status()
+        except HTTPError:
             if 'errors' in response.json():
                 for e in response.json()['errors']:
-                    for k, v in e.items():
-                        self.stdout.write(
-                            self.style.ERROR(' %s: %s' % (k, v))
-                        )
+                    self.write_stylized_response_items(e.items(), error=True)
+            raise CommandError(f" Status code: {response.status_code}")
+        else:
+            self.write_stylized_response_items(response.json().items())
+
+    def write_stylized_response_items(self, items, error=False):
+        """Write each in item to stdout with style."""
+        for k, v in items:
+            if error:
+                msg = self.style.ERROR(f" {k}: {v}")
             else:
-                self.stdout.write(
-                    self.style.ERROR('Status')
-                )
+                msg = self.style.SUCCESS(f" {k}: {v}")
+            self.stdout.write(msg)

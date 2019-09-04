@@ -26,17 +26,18 @@ class Command(BaseCommand, TwitterMixin):
 
     def handle(self, *args, **options):
         """Handle the command."""
+        env = settings.TWITTER_API_ENV
+        webhook_id = options['webhook_id']
+
+        endpoint_url = f"account_activity/all/:{env}/webhooks/:{webhook_id}"
+
         response = self.twitter_api.request(
-            'account_activity/all/:{env}/webhooks/:{id}'.format(
-                env=settings.TWITTER_API_ENV,
-                id=options['webhook_id']
-            ),
-            method_override='DELETE'
+            endpoint_url, method_override='DELETE'
         )
 
         if response.status_code == 204:
-            self.stdout.write(self.style.SUCCESS('Webhook deleted.'))
+            msg = self.style.SUCCESS("Webhook deleted.")
         else:
-            self.stdout.write(
-                self.style.ERROR(' Status code: %s' % response.status_code)
-            )
+            msg = self.style.ERROR(f" Status code: {response.status_code}")
+
+        return msg
