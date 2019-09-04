@@ -1,7 +1,9 @@
 """Get a list of Twitter accounts the app is currently subscribed to."""
+import json
 from django.conf import settings
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from tweets2text.twitter_api import TwitterMixin
+from requests.exceptions import HTTPError
 import logging
 
 logger = logging.getLogger(__name__)
@@ -14,28 +16,30 @@ class Command(BaseCommand, TwitterMixin):
 
     def handle(self, *args, **options):
         """Handle the command."""
-        response = self.twitter_api.request(
-            'account_activity/all/:{env}/subscriptions/list'.format(
-                env=settings.TWITTER_API_ENV,
-            )
+        env = settings.TWITTER_API_ENV
+        endpoint_url = f"account_activity/all/:{env}/subscriptions/list"
+        response = self.twitter_api.request(endpoint_url)
+
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            if 'errors' in response.json():
+                self.write_stylized_response_items(
+                    response.json()['errors'], error=True
+                )
+            raise CommandError(f" Status code: {response.status_code}")
+
+        info = json.dumps(
+            response.json(), sort_keys=True, indent=4
         )
 
-        if response.response.ok:
-            for k, v in response.json():
-                if type(v) == 'list':
-                    self.stdout.write('  %s...' % k)
-                    for i in v:
-                        self.stdout.write('    %s' % v)
-                else:
-                    self.stdout.write('  %s: %s' % (k, v))
-        else:
-            if 'errors' in response.json():
-                for e in response.json()['errors']:
-                    for k, v in e.items():
-                        self.stdout.write(
-                            self.style.ERROR(' %s: %s' % (k, v))
-                        )
+        return info
+
+    def write_stylized_response_items(self, items, error=False):
+        """Write each in item to stdout with style."""
+        for k, v in items:
+            if error:
+                msg = self.style.ERROR(f" {k}: {v}")
             else:
-                self.stdout.write(
-                    self.style.ERROR(' Status code: %s' % response.status_code)
-                )
+                msg = self.style.SUCCESS(f" {k}: {v}")
+            self.stdout.write(msg)

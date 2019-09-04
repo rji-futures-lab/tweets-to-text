@@ -16,7 +16,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Handle the command."""
-        u = User.objects.get(id=options['user_id'])
-        u.compilations.all().delete()
-        u.follow_history.delete()
-        u.delete()
+        user = User.objects.get(id=options['user_id'])
+        user.compilations.all().delete()
+        user.follow_history.delete()
+        user.delete()
+
+        msg = f"{user} has been deleted."
+
+        return self.style.SUCCESS(msg)
