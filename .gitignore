@@ -107,3 +107,6 @@ venv.bak/
 
 zappa_settings.json
 secrets.cfg
+
+# need to delete this after initial dev stabilizes
+migrations/
