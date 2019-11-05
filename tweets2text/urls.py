@@ -10,4 +10,7 @@ urlpatterns = [
         views.plain_text_view, name='compilation',
     ),
     path('webhooks/twitter/', views.TwitterWebhook.as_view()),
+    path('compilation/<uuid:compilation_id>/edit', 
+    	views.TweetTextUpdate.as_view(), name='update'
+    	),
 ]

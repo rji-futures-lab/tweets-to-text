@@ -36,7 +36,7 @@ class Command(BaseCommand, TwitterMixin):
         response = self.twitter_api.request(
             endpoint, params={'url': webhook_url}
         )
-
+        '''
         try:
             response.raise_for_status()
         except HTTPError:
@@ -45,7 +45,8 @@ class Command(BaseCommand, TwitterMixin):
                     self.write_stylized_response_items(e.items(), error=True)
             raise CommandError(f" Status code: {response.status_code}")
         else:
-            self.write_stylized_response_items(response.json().items())
+        '''
+        self.write_stylized_response_items(response.json().items())
 
     def write_stylized_response_items(self, items, error=False):
         """Write each in item to stdout with style."""

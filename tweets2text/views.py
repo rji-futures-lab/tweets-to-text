@@ -11,6 +11,10 @@ from tweets2text.handlers import handle_account_activity
 from tweets2text.models import (
     AccountActivity, TweetTextCompilation,
 )
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from .forms import TextEditForm
+from django.views.generic.edit import UpdateView
 
 
 class Homepage(TemplateView):
@@ -65,7 +69,6 @@ class TwitterWebhook(View):
 
         return JsonResponse(resp_data)
 
-
 def plain_text_view(request, compilation_id):
     try:
         compilation = TweetTextCompilation.objects.filter(
@@ -73,10 +76,55 @@ def plain_text_view(request, compilation_id):
         ).get(id=compilation_id)
     except TweetTextCompilation.DoesNotExist:
         raise Http404("Compilation does not exist")
-
     response = HttpResponse(
         compilation.text,
         content_type="text/plain; charset=utf-8",
     )
 
     return response
+
+def text_edit(request, compilation_id):
+    compilation = get_object_or_404(TweetTextCompilation, id=compilation_id)
+    form = TextEditForm(request.POST or None, instance=compilation)
+    if form.is_valid():
+        if(request.POST.get('revert')):
+            compilation.complete()
+        else:
+            instance = form.save(commit=False)
+            instance.save()
+
+    context = {
+        "id": compilation.id,
+        "text": compilation.text,
+        "form": form,
+    }
+    return render(request, 'tweets2text/text_edit.html', context)
+
+class TweetTextUpdate(UpdateView):
+    model = TweetTextCompilation
+    form_class = TextEditForm
+    template_name_suffix = '_update_form'
+    pk_url_kwarg = 'compilation_id'
+    context_object_name = 'compilation'
+    success_url = 'edit'
+    reverting = False
+
+    def post(self, request, *args, **kwargs):
+        compilation = get_object_or_404(TweetTextCompilation, pk=self.kwargs['compilation_id'])
+        if "revert" in request.POST:
+            print("Reverting...")
+            compilation.complete()
+            self.reverting = True
+            request.POST._mutable = True
+        else:
+            self.reverting = False
+        return super(TweetTextUpdate, self).post(request, *args, **kwargs)
+    
+    def form_valid(self, form):
+        compilation = get_object_or_404(TweetTextCompilation, pk=self.kwargs['compilation_id'])
+        if(self.reverting == True):
+            pass
+        else:
+            form.save()
+        return HttpResponseRedirect(self.get_success_url())
+    

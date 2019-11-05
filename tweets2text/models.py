@@ -286,11 +286,13 @@ class TweetTextCompilation(TwitterMixin, models.Model):
     )
     text = models.TextField(
         blank=True,
-        editable=False,
     )
     thread_only = models.BooleanField(
         default=False,
     )
+
+    def get_absolute_url(self):
+        return reverse('compilation-detail', kwargs={'pk': self.pk})
 
     def complete(self):
         self.tweets = self.get_tweets()

@@ -1,0 +1,19 @@
+.formstyle {
+    background-color: #329BB1;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+.formstyle h1 {
+    color: white;
+}
+
+.formtext {
+    color: blue;
+}
+
+.button {
+  background-color: #329BB1;
+  border: #329BB1;
+  color: white;
+}

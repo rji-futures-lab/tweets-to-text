@@ -1,0 +1,32 @@
+{% load bootstrap3 %}
+{% load static %}
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'tweets2text/formstyle.css' %}" />
+</head>
+
+
+<body class="formstyle">
+    <h1>Your compilation:</h1>
+<form method="post" class="form" id="textform">
+    {% csrf_token %}
+    {% bootstrap_form form %}     
+</form>
+
+<button class="button" type="submit" value="Update" form="textform">Save</button>
+<button class="button" type="submit" form="textform" name="revert">Revert</button>
+<button class="button" id="copy" onclick="copyText()">Copy</button>
+
+<script>
+
+function copyText() {
+    var copyText = document.getElementById("textform");
+    copyText[1].select();
+    console.log(copyText[1]);
+    document.execCommand("copy");
+}
+
+</script>
+
+</body>
