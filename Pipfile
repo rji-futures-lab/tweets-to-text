@@ -12,6 +12,7 @@ zappa = "*"
 boto3 = "==1.9.80"
 botocore = "==1.12.80"
 s3transfer = "==0.1.13"
+django-bootstrap4 = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"

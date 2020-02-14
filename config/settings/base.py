@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.postgres',
     'tweets2text',
-    'bootstrap3',
+    'bootstrap4',
 ]
 
 SITE_ID = 1
