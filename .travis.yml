@@ -32,11 +32,9 @@ env:
 script:
 - make test
 after_success:
-- coveralls
+- test $TRAVIS_BRANCH = “master” && zappa update
 before_install:
 - openssl aes-256-cbc -K $encrypted_2e58cba46dd8_key -iv $encrypted_2e58cba46dd8_iv
   -in zappa_settings.json.enc -out zappa_settings.json -d
 - openssl aes-256-cbc -K $encrypted_2e58cba46dd8_key -iv $encrypted_2e58cba46dd8_iv
   -in secrets.cfg.enc -out secrets.cfg -d
-after_success:
-- test $TRAVIS_BRANCH = “master” && zappa update
