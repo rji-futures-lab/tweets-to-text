@@ -46,3 +46,37 @@ python manage.py replacewebhook '{random characters}.ngrok.io'
 ```
 
 Hopefully the output of the management command will indicate, and now you can start working on improvments to TweetsToText.
+
+## Deployment notes
+
+TweetsToText takes advantage of Travis CI's continuous integration and automation features for deployment. When changes to the project are pushed to the master branch, Travis automatically attemtps to build and test the code. If all of the tests pass, Travis will call:
+
+```sh
+zappa update prod
+```
+
+The project should deploy successfully, using encrypted versions of the zappa_settings.json and secrets.cfg file stored in the repo.
+
+If changes need to be made to either the zappa_settings.json or secrets.cfg file, we must re-encrypt the files and push the updated versions to the repo. To do this, an archive of the two files must first be created:
+
+```sh
+tar cvf secrets.tar zappa_settings.json secrets.cfg
+```
+
+We then must encrypt the new secrets.tar file and then remove the unencrypted secrets.tar file from our directory:
+
+```sh
+travis encrypt-file secrets.tar --add --pro
+rm secrets.tar
+```
+
+The --add argument should automatically update the travis.yml file with instructions for decrypting the new secrets.tar file. The before_install part of the travis.yml file should now look something like this:
+
+```sh
+before_install:
+- openssl aes-256-cbc -K $encrypted_[…]_key -iv $encrypted_[…]_iv
+ -in secrets.tar.enc -out secrets.tar -d
+- tar xvf secrets.tar
+```
+
+If there are multiple decryption commands, remove the old ones. The project should be ready for automatic deployment.
