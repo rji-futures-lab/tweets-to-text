@@ -55,22 +55,26 @@ TweetsToText takes advantage of Travis CI's continuous integration and automatio
 zappa update prod
 ```
 
-The project should deploy successfully, using encrypted versions of the zappa_settings.json and secrets.cfg file stored in the repo.
+The project should deploy successfully, using encrypted versions of the `zappa_settings.json` and `secrets.cfg` files stored in the repo.
 
-If changes need to be made to either the zappa_settings.json or secrets.cfg file, we must re-encrypt the files and push the updated versions to the repo. To do this, an archive of the two files must first be created:
+#### Updating `zappa_settings.json` or `secrets.cfg`
+
+If changes need to be made to either the `zappa_settings.json` or `secrets.cfg` file, we must re-encrypt the files and push the updated versions to the repo. To do this, we first must remove the `profile_name` entry from the `zappa_settings.json` file to ensure Zappa looks for environment variables instead of `~/.aws/credentials`. 
+
+Next, remove the current `secrets.tar.enc` file with `rm secrets.tar.enc`. Then an archive of the `zappa_settings.json` and `secrets.cfg` files must be created:
 
 ```sh
 tar cvf secrets.tar zappa_settings.json secrets.cfg
 ```
 
-We then must encrypt the new secrets.tar file and then remove the unencrypted secrets.tar file from our directory:
+We then must encrypt the new `secrets.tar` file and then remove the unencrypted `secrets.tar` file from our directory:
 
 ```sh
 travis encrypt-file secrets.tar --add --pro
 rm secrets.tar
 ```
 
-The --add argument should automatically update the travis.yml file with instructions for decrypting the new secrets.tar file. The before_install part of the travis.yml file should now look something like this:
+The `--add` argument should automatically update the `travis.yml` file with instructions for decrypting the new secrets.tar file. The `before_install` part of the `travis.yml` file should now look something like this:
 
 ```sh
 before_install:
@@ -79,4 +83,28 @@ before_install:
 - tar xvf secrets.tar
 ```
 
-If there are multiple decryption commands, remove the old ones. The project should be ready for automatic deployment.
+If there are multiple decryption commands, remove the old ones. Go ahead and undo the deletion of the `profile_name` entry from the `zappa_settings.json` file to allow local testing. Commit your new `secrets.tar.enc` file and updated `travis.yml` file and push to the master branch. The project should be ready for automatic deployment.
+
+#### Updating AWS credentials
+
+If changes need to be made to the AWS credentials for the project, we must re-encrypt the credentials as environment variables in the `travis.yml` file.
+
+This is done with:
+
+```sh
+travis encrypt AWS_ACCESS_KEY_ID=[value] --add --pro
+travis encrypt AWS_SECRET_ACCESS_KEY=[value] --add --pro
+```
+
+The `env` part of the `travis.yml` file should now look something like this:
+
+```sh
+env:
+  global:
+  - DJANGO_ENV=test
+  - PIPENV_VERBOSITY=-1
+  - secure: [encrypted key value]
+  - secure: [encrypted key value]
+```
+
+Go ahead and commit your updated `travis.yml` file and push to master. The project should be ready for autmatic deployment.
