@@ -2,7 +2,7 @@
 
 TweetsToText is a bot that lives on Twitter. It collects your tweets into plain text files. So you can take your brilliant observations somewhere else.
 
-[![Build Status](https://travis-ci.org/rji-futures-lab/tweets-to-text.svg?branch=master)](https://travis-ci.org/rji-futures-lab/tweets-to-text)
+[![Build Status](https://travis-ci.com/rji-futures-lab/tweets-to-text.svg?branch=master)](https://travis-ci.com/rji-futures-lab/tweets-to-text)
 [![Coverage Status](https://coveralls.io/repos/github/rji-futures-lab/tweets-to-text/badge.svg?branch=master)](https://coveralls.io/github/rji-futures-lab/tweets-to-text?branch=master)
 
 ## How it works:
